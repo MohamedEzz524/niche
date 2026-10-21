@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" fill="none">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Lobster+Two:ital,wght@1,700&amp;family=Cairo:wght@600&amp;family=Hanken+Grotesk:wght@600&amp;display=swap');</style>
+  <!-- drip arch: echoes the Viva label shape -->
+  <path d="M24 56 A36 36 0 0 1 96 56 V90 Q96 95 91 95 Q87 95 87 99 V104 Q87 110 81.5 110 Q76 110 76 104 V100 Q76 95 71 95 H49 Q44 95 44 99 V101 Q44 106 39.5 106 Q35 106 35 101 V99 Q35 95 30 95 Q24 95 24 90 Z" fill="#fff" stroke="#1d1d1d" stroke-width="1.6" stroke-linejoin="round"/>
+  <text x="60" y="63" text-anchor="middle" font-family="'Lobster Two', 'Pacifico', cursive" font-style="italic" font-weight="700" font-size="25" fill="#3b2318">Viva</text>
+  <text x="60" y="78" text-anchor="middle" font-family="'Cairo', sans-serif" font-weight="600" font-size="7.4" fill="#1d1d1d">عبدالصمد القرشي</text>
+  <text x="60" y="86.5" text-anchor="middle" font-family="'Hanken Grotesk', Arial, sans-serif" font-weight="600" font-size="3.9" letter-spacing=".3" fill="#1d1d1d">ABDUL SAMAD AL QURASHI</text>
+</svg>
