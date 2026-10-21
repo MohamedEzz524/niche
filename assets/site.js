@@ -711,16 +711,17 @@ function renderCart() {
 function addToCart(k, btn) {
   const go = () => {
     const l = cart.find(x => x.k === k); l ? l.q++ : cart.push({k, q: 1});
-    store.set('cart', cart); renderCart();
+    store.set('cart', cart); renderCart(); renderBundle();
     const c = $('#cartCount'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
     if (!$('#cartDrawer').classList.contains('is-open')) openDrawer($('#cartDrawer'));
   };
   if (btn && btn.classList.contains('btn') && !btn.closest('.drawer')) {
     if (btn.classList.contains('is-loading')) return;
+    if (!btn.dataset.done) btn._label = btn.innerHTML;
     clearTimeout(btn._t); btn.classList.remove('is-done'); btn.classList.add('is-loading');
     setTimeout(() => {
       btn.classList.remove('is-loading'); btn.classList.add('is-done'); btn.dataset.done = '1'; btn.innerHTML = t('p.added'); go();
-      btn._t = setTimeout(() => { btn.classList.remove('is-done'); delete btn.dataset.done; labelButtons(); }, 1600);
+      btn._t = setTimeout(() => { btn.classList.remove('is-done'); delete btn.dataset.done; if (btn._label != null) btn.innerHTML = btn._label; labelButtons(); }, 1600);
     }, 650);
   } else go();
 }
@@ -1141,6 +1142,7 @@ function makeSlider(tr) {
     rail = tr.querySelector(':scope > .rail');
     if (!rail) { rail = document.createElement('div'); rail.className = 'rail'; rail.append(...tr.children); tr.append(rail); }
     [...rail.children].forEach((c, k) => { if (c.dataset.slide == null) c.dataset.slide = k; });
+    if (!rail._te) { rail._te = true; rail.addEventListener('transitionend', e => { if (e.target === rail && e.propertyName === 'transform') settle(); }); }
   };
   wrap();
   // u = offset in "reading direction" px: 0 at rest, negative = moved towards the next card
@@ -1157,13 +1159,13 @@ function makeSlider(tr) {
   };
   const logical = () => +rail.firstElementChild.dataset.slide;
   const settle = () => {                     // after an animation: normalise back to offset 0
-    const st = step(); if (!st) return;
+    clearTimeout(s.guard);
+    const st = step(); if (!st) { set(0, false); s.busy = false; return; }
     while (s.u <= -st / 2) rotate(1);
     while (s.u > st / 2) rotate(-1);
     set(0, false); s.busy = false; s.i = logical(); sync();
     if (s.pending) { const one = Math.sign(s.pending); s.pending -= one; s.go(one); }   // play queued clicks one card at a time
   };
-  rail.addEventListener('transitionend', e => { if (e.target === rail && e.propertyName === 'transform') settle(); });
   s.go = delta => {
     if (!delta) return;
     if (s.busy) { s.pending += delta; return; }     // queue fast clicks instead of dropping them
@@ -1171,9 +1173,10 @@ function makeSlider(tr) {
     s.busy = true;
     if (delta < 0) { for (let k = 0; k < -delta; k++) rotate(-1); void rail.offsetWidth; set(0, true); }
     else set(-delta * st, true);
+    clearTimeout(s.guard); s.guard = setTimeout(() => s.busy && settle(), 450);   // transitionend can be lost (resize, tab switch)
     if (matchMedia('(prefers-reduced-motion:reduce)').matches) settle();
   };
-  s.layout = () => set(0, false);
+  s.layout = () => { if (!s.busy) set(0, false); };
   s.rewrap = () => { const fresh = !tr.querySelector(':scope > .rail'); wrap(); if (fresh) { s.i = 0; s.busy = false; s.pending = 0; set(0, false); } sync(); };
   const sync = () => {
     $$(`.track-nav[data-for="#${tr.id}"] .track-nav__dots i`).forEach((d, k) => d.classList.toggle('on', k === s.i));
@@ -1211,7 +1214,7 @@ function makeSlider(tr) {
     s.busy = true;
     const target = -k * st;
     if (Math.abs(target - s.u) < 1) { set(target, false); settle(); }
-    else set(target, true);
+    else { set(target, true); clearTimeout(s.guard); s.guard = setTimeout(() => s.busy && settle(), 450); }
     tr._justDragged = true; setTimeout(() => tr._justDragged = false, 0);
   };
   addEventListener('pointerup', end);
@@ -1441,13 +1444,15 @@ function heroControls() {
   const PLAY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M10 8.5l6 3.5-6 3.5z"/></svg>';
   const MUTED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
   const SOUND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9a4.5 4.5 0 010 6M18.5 6.5a8 8 0 010 11"/></svg>';
-  let playing = true, muted = true;
+  const st = heroControls.st ||= {playing: true, muted: true};
+  if (v && v.src) { st.playing = !v.paused; st.muted = v.muted; }
+  let {playing, muted} = st;
   const paint = () => {
     play.innerHTML = playing ? PAUSE : PLAY; play.setAttribute('aria-label', t(playing ? 'home.pause' : 'home.play'));
     mute.innerHTML = muted ? MUTED : SOUND; mute.setAttribute('aria-label', t(muted ? 'home.unmute' : 'home.mute'));
   };
-  play.onclick = () => { playing = !playing; if (v && v.src) playing ? v.play().catch(() => {}) : v.pause(); paint(); };
-  mute.onclick = () => { muted = !muted; if (v) v.muted = muted; paint(); };
+  play.onclick = () => { playing = st.playing = !playing; if (v && v.src) playing ? v.play().catch(() => {}) : v.pause(); paint(); };
+  mute.onclick = () => { muted = st.muted = !muted; if (v) v.muted = muted; paint(); };
   paint();
 }
 
