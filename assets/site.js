@@ -25,10 +25,13 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;',
   // the bar eases towards the real progress (never jumps), and can't pass the time-based floor of the minimum display
   let target = 0;
   const paint = v => { target = Math.max(target, Math.min(100, v)); };
-  const MIN = 1800;
+  const MIN = 3000;
+  // showcase pacing: quick start, a couple of brief holds, then a steady finish
+  const STAGES = [[0, 0], [.18, 34], [.32, 41], [.55, 68], [.68, 72], [.9, 94], [1, 96]];
+  const timeline = t => { for (let k = 1; k < STAGES.length; k++) { const [t1, v1] = STAGES[k], [t0, v0] = STAGES[k - 1]; if (t <= t1) { const x = (t - t0) / (t1 - t0); return v0 + (v1 - v0) * (x * x * (3 - 2 * x)); } } return 96; };
   const anim = () => {
-    const cap = gone ? 100 : Math.min(95, performance.now() / MIN * 95);
-    shown += (Math.min(target, cap) - shown) * .12;
+    const cap = gone && performance.now() >= MIN ? 100 : timeline(Math.min(1, performance.now() / MIN));
+    shown += (Math.min(Math.max(target, cap * .9), cap) - shown) * .14;
     if (fill) fill.style.width = shown.toFixed(1) + '%';
     pl.setAttribute('aria-valuenow', Math.round(shown));
     if (pl.isConnected) requestAnimationFrame(anim);
