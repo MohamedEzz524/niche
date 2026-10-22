@@ -22,7 +22,18 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;',
   // progress bar at the bottom: share of above-the-fold images loaded, 100% when the page is ready
   const fill = pl.querySelector('.pl__fill');
   let shown = 0, gone = false;
-  const paint = v => { shown = Math.max(shown, Math.min(100, v)); if (fill) fill.style.width = shown + '%'; pl.setAttribute('aria-valuenow', Math.round(shown)); };
+  // the bar eases towards the real progress (never jumps), and can't pass the time-based floor of the minimum display
+  let target = 0;
+  const paint = v => { target = Math.max(target, Math.min(100, v)); };
+  const MIN = 1800;
+  const anim = () => {
+    const cap = gone ? 100 : Math.min(95, performance.now() / MIN * 95);
+    shown += (Math.min(target, cap) - shown) * .12;
+    if (fill) fill.style.width = shown.toFixed(1) + '%';
+    pl.setAttribute('aria-valuenow', Math.round(shown));
+    if (pl.isConnected) requestAnimationFrame(anim);
+  };
+  requestAnimationFrame(anim);
   const track = () => {
     if (gone) return;
     const imgs = [...document.images].filter(i => !pl.contains(i) && (i.loading !== 'lazy' || i.getBoundingClientRect().top < innerHeight * 1.5));
@@ -36,7 +47,7 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;',
     setTimeout(() => {
       pl.classList.add('is-done');
       setTimeout(() => pl.remove(), 900);
-    }, Math.max(350, 1800 - performance.now()));   // short minimum so the logo animation still registers
+    }, Math.max(650, MIN - performance.now()));   // short minimum so the logo animation and the bar still register
   };
   if (document.readyState === 'complete') hide();
   else addEventListener('load', hide, {once: true});

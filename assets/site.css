@@ -1529,6 +1529,7 @@ html.lenis,html.lenis body{height:auto}
 
 /* preloader: light blurred backdrop, logo centred, determinate progress bar along the bottom */
 .pl{background:rgba(250,248,246,.78);-webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1)}
-.pl__bar{position:absolute;inset-inline:0;bottom:0;width:auto;height:3px;background:rgba(185,16,18,.12)}
+.pl__bar{position:relative;inset:auto;width:min(180px,46vw);height:3px;border-radius:3px;background:rgba(185,16,18,.14)}
+.pl__fill{border-radius:3px}
 .pl__bar::after{display:none}
-.pl__fill{display:block;height:100%;width:0;background:#B91012;transition:width .35s var(--ease)}
+.pl__fill{display:block;height:100%;width:0;background:#B91012}
