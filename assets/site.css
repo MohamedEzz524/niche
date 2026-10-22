@@ -1,7 +1,9 @@
 /* ==========================================================================
    TOKENS
    ========================================================================== */
-@font-face{font-family:"Harir";src:url("fonts/harir.otf") format("opentype");font-display:swap}
+/* Harir ships with a deep descender (asc 1560 / desc 1400 of 2048 upm), which centres the line box below the Arabic letterforms.
+   Same total height, shifted up so the box centre sits on the glyphs: text is optically centred in buttons, pills and badges. */
+@font-face{font-family:"Harir";src:url("fonts/harir.otf") format("opentype");font-display:swap;ascent-override:92%;descent-override:53%;line-gap-override:0%}
 :root{
   --ink:#212121; --black:#000; --white:#fff;
   --coral:#B91012; --coral-dk:#8A0C0E;
