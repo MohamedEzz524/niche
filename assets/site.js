@@ -13,11 +13,42 @@ const store = {
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
 /* =====================================================================
+   PRELOADER — fades out once the page has loaded (min. display so the smoke is seen)
+   ===================================================================== */
+(() => {
+  const pl = document.getElementById('preloader');
+  if (!pl) return;
+  if (pl.hidden) return pl.remove(); // switched off: drop it (also stops the smoke loop)
+  // progress bar at the bottom: share of above-the-fold images loaded, 100% when the page is ready
+  const fill = pl.querySelector('.pl__fill');
+  let shown = 0, gone = false;
+  const paint = v => { shown = Math.max(shown, Math.min(100, v)); if (fill) fill.style.width = shown + '%'; pl.setAttribute('aria-valuenow', Math.round(shown)); };
+  const track = () => {
+    if (gone) return;
+    const imgs = [...document.images].filter(i => !pl.contains(i) && (i.loading !== 'lazy' || i.getBoundingClientRect().top < innerHeight * 1.5));
+    paint(8 + (imgs.length ? imgs.filter(i => i.complete).length / imgs.length : 1) * 82);
+    requestAnimationFrame(track);
+  };
+  paint(8); requestAnimationFrame(track);
+  const hide = () => {
+    if (gone) return;
+    gone = true; paint(100);
+    setTimeout(() => {
+      pl.classList.add('is-done');
+      setTimeout(() => pl.remove(), 900);
+    }, Math.max(350, 1800 - performance.now()));   // short minimum so the logo animation still registers
+  };
+  if (document.readyState === 'complete') hide();
+  else addEventListener('load', hide, {once: true});
+  setTimeout(hide, 9000);
+})();
+
+/* =====================================================================
    I18N — Arabic (default, RTL) + English
    ===================================================================== */
 const I18N = {
 en: {
-  'meta.title': 'Honey Orchard – Eau de Parfum | Abdul Samad Al Qurashi', 'skip': 'Skip to content',
+  'meta.title': 'Honey Orchard – Eau de Parfum | Niche', 'skip': 'Skip to content',
   'ann.1': 'Up to&nbsp;<b>20% OFF</b>&nbsp;+ FREE shipping', 'ann.2': 'Free returns on&nbsp;<b>every</b>&nbsp;order', 'ann.3': 'Bundle 3 scents &amp; save&nbsp;<b>extra 10%</b>',
   'a.offer': 'Offer details', 'a.main': 'Main', 'a.cart': 'Cart', 'a.locale': 'Country and language', 'a.menu': 'Menu', 'a.crumbs': 'Breadcrumb', 'a.closeMenu': 'Close menu', 'a.clear': 'Clear', 'a.closeSearch': 'Close search', 'a.cookie': 'Cookie settings', 'a.dec': 'Decrease', 'a.inc': 'Increase', 'a.openImg': 'Open image {n}',
   'nav.perfumes': 'Perfumes', 'nav.bundle': 'Make a bundle', 'nav.about': 'About', 'nav.search': 'Search',
@@ -27,9 +58,9 @@ en: {
   'mega.edits': 'The Edits', 'edit.best': 'Bestsellers', 'edit.new': 'New Arrivals', 'mega.discover': 'Discover', 'disc.layer': 'Layering Perfumes', 'disc.fams': 'Scent Families',
   'fam.Flowery': 'Flowery', 'fam.Fresh': 'Fresh', 'fam.Gourmand': 'Gourmand', 'fam.Herbal': 'Herbal', 'fam.Earthy': 'Earthy', 'fam.Warm': 'Warm',
   'about.who': 'Who we are', 'about.us': 'About Us', 'about.refer': 'Refer A Friend', 'about.help': 'Help', 'about.contact': 'Contact Us', 'about.faq': 'FAQ',
-  'crumb.back': 'Back', 'crumb.all': 'All', 'crumb.imp': 'Abdul Samad Al Qurashi Impressions',
+  'crumb.back': 'Back', 'crumb.all': 'All', 'crumb.imp': 'Niche Impressions',
   'p.name': 'Honey Orchard', 'p.meta': 'Eau de Parfum. Size: 50ml / 1.7oz',
-  'p.inspired': 'Smells like these fragrances <a href="#" data-toast-k="toast.compare">on Google</a><br>(Luxury brand price: {p})',
+  'p.inspired': 'Smells like these fragrances <a href="#" data-toast-k="toast.compare">on Google</a><br>(Inspired by {p})',
   'p.crafted': 'Crafted in&nbsp;<span class="coral" style="font-weight:600">France</span>', 'p.family': '<b>Scent Family:</b> Gourmand',
   'p.famTip': '<b>Gourmand</b> scents smell good enough to eat: honey, caramel, vanilla, ripe fruit and toasted nuts. Cosy, sweet and easy to love.',
   'p.atc': 'Add to cart', 'p.added': 'Added ✓', 'edp': 'Eau de Parfum · 50ml',
@@ -44,11 +75,11 @@ en: {
   'acc.paired': 'Best paired with:', 'paired.note': 'Layer for a warmer, toasted finish.', 'btn.addPrice': 'Add – {p}',
   'trust.1': 'Free<br>returns', 'trust.1s': 'guaranteed', 'trust.2': 'Made<br>in France', 'trust.3': '2M+ bottles<br>sold', 'trust.4': 'Long-<br>lasting', 'trust.4s': 'eau de parfum',
   'recs.title': 'You Might Love', 'recs.more': 'Show more', 'recs.all': 'All perfumes shown',
-  'card.alt': 'Smells like these<br>Fragrances', 'card.lux': '(Luxury brand price: {p})', 'card.orig': 'Abdul Samad Al Qurashi Originals',
-  'rated.brand': 'Reviewed', 'rated.txt': 'Abdul Samad Al Qurashi is rated <b>Excellent</b>.', 'rated.small': '4.8 ⓘ (1000+ Reviews)',
+  'card.alt': 'Smells like these<br>Fragrances', 'card.lux': 'Inspired by {p}', 'insp.by': 'Inspired by:', 'insp.Men': 'For him', 'insp.Women': 'For her', 'insp.Unisex': 'Unisex', 'card.orig': 'Niche Originals',
+  'rated.brand': 'Reviewed', 'rated.txt': 'Niche is rated <b>Excellent</b>.', 'rated.small': '4.8 ⓘ (1000+ Reviews)',
   'rv.tab': 'Reviews ({n})', 'qa.tab': 'Questions', 'rv.based': 'Based on {n} reviews', 'rv.rating': 'Rating', 'rv.write': 'Write a review', 'rv.sort': 'Sort',
   'sort.recent': 'Most Recent', 'sort.high': 'Highest Rating', 'sort.low': 'Lowest Rating', 'sort.helpful': 'Most Helpful',
-  'rv.more': 'Show more', 'rv.verified': 'Verified Buyer', 'rv.rec': 'I recommend this product', 'rv.helpful': 'Was this helpful?', 'rv.brand': 'Abdul Samad Al Qurashi Team', 'rv.empty': 'No {n}-star reviews yet.', 'rv.justnow': 'Just now', 'rv.starsAl': '{n} star reviews',
+  'rv.more': 'Show more', 'rv.verified': 'Verified Buyer', 'rv.rec': 'I recommend this product', 'rv.helpful': 'Was this helpful?', 'rv.brand': 'Niche Team', 'rv.empty': 'No {n}-star reviews yet.', 'rv.justnow': 'Just now', 'rv.starsAl': '{n} star reviews',
   'qa.intro': 'Have a question? Our team usually answers within a day.', 'qa.ask': 'Ask a question', 'qa.q': 'Q:', 'qa.wait': 'Awaiting answer',
   'seo': 'Vanilla Perfume|Jasmine Perfume|Oud Perfume|Patchouli Perfume|Rose Perfume|Lavender Perfume|Coconut Perfume|Gardenia Perfume|Amber Perfume|Musk Perfume',
   'f.news': 'Be the first to know.', 'f.email': 'Enter your email address', 'f.submit': 'Submit', 'f.nlBad': 'Please enter a valid email address.', 'f.nlOk': 'Thanks for subscribing! Check your inbox ✉️',
@@ -66,7 +97,7 @@ en: {
   'loc.title': 'Country &amp; language', 'loc.country': 'Country/region', 'loc.search': 'Search countries', 'loc.lang': 'Language', 'loc.update': 'Update', 'loc.none': 'No country found', 'toast.loc': 'Shopping in {c} · {l}',
   'cookie.title': 'We respect your privacy', 'cookie.text': 'This website uses cookies to ensure you get the best experience. <a href="#" class="u-link">Learn more</a>', 'cookie.accept': 'Accept', 'cookie.decline': 'Decline', 'cookie.prefs': 'Preferences',
   'cookie.nec': 'Necessary<small>Required for the site to work</small>', 'cookie.ana': 'Analytics<small>Helps us improve the store</small>', 'cookie.mkt': 'Marketing<small>Personalised offers</small>', 'cookie.save': 'Save preferences',
-  'lead.cap': 'Three golden, fruity eaux de parfum', 'lead.close': 'Close', 'lead.hi': 'Hey, first-timer!', 'lead.h': 'Want up to <span class="coral">20% OFF?</span>', 'lead.p': 'Join our VIP email list for exclusive access.', 'lead.ph': 'Enter your email here',
+  'lead.capT': 'Women’s bestsellers', 'lead.cap': 'Miss, Scandal & Coco Niche', 'lead.close': 'Close', 'lead.hi': 'Hey, first-timer!', 'lead.h': 'Want up to <span class="coral">20% OFF?</span>', 'lead.p': 'Join our VIP email list for exclusive access.', 'lead.ph': 'Enter your email here',
   'lead.fine': 'By tapping “Next” you agree to receive marketing emails. You can unsubscribe at any time. See our Privacy Policy and Terms of Service.', 'lead.next': 'Next', 'lead.no': 'No thanks.',
   'lead.in': 'You’re in!', 'lead.h2': 'Here’s <span class="coral">20% OFF</span>', 'lead.p2': 'Use this code at checkout on your first order.', 'lead.copy': 'Copy', 'lead.start': 'Start shopping', 'lead.pill': 'Get 20% OFF', 'toast.copied': 'Code copied!', 'toast.code': 'Code: {c}',
   'offer.title': 'Bundle &amp; save', 'offer.2': '2 perfumes', 'offer.3': '3 perfumes', 'offer.4': '4+ perfumes', 'offer.off': '{d}% OFF', 'offer.note': 'Discount applies automatically in your cart. Free shipping on orders with 2 or more items.',
@@ -76,7 +107,7 @@ en: {
   'flv.honey': 'Honey Drip', 'flv.berry': 'Berry Pop', 'flv.marsh': 'Marshmallow',
 },
 ar: {
-  'meta.title': 'بستان العسل – ماء عطر | عبدالصمد القرشي', 'skip': 'انتقل إلى المحتوى',
+  'meta.title': 'بستان العسل – ماء عطر | نيش', 'skip': 'انتقل إلى المحتوى',
   'ann.1': 'خصم حتى&nbsp;<b>20%</b>&nbsp;+ شحن مجاني', 'ann.2': 'إرجاع مجاني على&nbsp;<b>كل</b>&nbsp;طلب', 'ann.3': 'اجمع 3 عطور ووفّر&nbsp;<b>10% إضافية</b>',
   'a.offer': 'تفاصيل العرض', 'a.main': 'القائمة الرئيسية', 'a.cart': 'السلة', 'a.locale': 'الدولة واللغة', 'a.menu': 'القائمة', 'a.crumbs': 'مسار التنقل', 'a.closeMenu': 'إغلاق القائمة', 'a.clear': 'مسح', 'a.closeSearch': 'إغلاق البحث', 'a.cookie': 'إعدادات ملفات الارتباط', 'a.dec': 'إنقاص', 'a.inc': 'زيادة', 'a.openImg': 'افتح الصورة {n}',
   'nav.perfumes': 'العطور', 'nav.bundle': 'كوّن باقتك', 'nav.about': 'من نحن', 'nav.search': 'بحث',
@@ -86,9 +117,9 @@ ar: {
   'mega.edits': 'المختارات', 'edit.best': 'الأكثر مبيعاً', 'edit.new': 'وصل حديثاً', 'mega.discover': 'اكتشف', 'disc.layer': 'طبقات العطور', 'disc.fams': 'العائلات العطرية',
   'fam.Flowery': 'زهري', 'fam.Fresh': 'منعش', 'fam.Gourmand': 'غورماند', 'fam.Herbal': 'عشبي', 'fam.Earthy': 'ترابي', 'fam.Warm': 'دافئ',
   'about.who': 'من نحن', 'about.us': 'قصتنا', 'about.refer': 'ادعُ صديقاً', 'about.help': 'المساعدة', 'about.contact': 'تواصل معنا', 'about.faq': 'الأسئلة الشائعة',
-  'crumb.back': 'رجوع', 'crumb.all': 'الكل', 'crumb.imp': 'انطباعات عبدالصمد القرشي',
+  'crumb.back': 'رجوع', 'crumb.all': 'الكل', 'crumb.imp': 'انطباعات نيش',
   'p.name': 'بستان العسل', 'p.meta': 'ماء عطر. الحجم: 50 مل / 1.7 أونصة',
-  'p.inspired': 'يشبه هذه العطور <a href="#" data-toast-k="toast.compare">على Google</a><br>(سعر العلامة الفاخرة: {p})',
+  'p.inspired': 'يشبه هذه العطور <a href="#" data-toast-k="toast.compare">على Google</a><br>(مستوحى من {p})',
   'p.crafted': 'صُنع في&nbsp;<span class="coral" style="font-weight:600">فرنسا</span>', 'p.family': '<b>العائلة العطرية:</b> غورماند',
   'p.famTip': 'عطور <b>الغورماند</b> شهيّة الرائحة: عسل وكراميل وفانيليا وفواكه ناضجة ومكسّرات محمّصة. دافئة وحلوة وسهلة الحب.',
   'p.atc': 'أضف إلى السلة', 'p.added': 'تمت الإضافة ✓', 'edp': 'ماء عطر · 50 مل',
@@ -103,11 +134,11 @@ ar: {
   'acc.paired': 'يُنسّق بشكل مثالي مع:', 'paired.note': 'ادمجهما للمسة دافئة ومحمّصة.', 'btn.addPrice': 'أضف – {p}',
   'trust.1': 'إرجاع<br>مجاني', 'trust.1s': 'مضمون', 'trust.2': 'صُنع<br>في فرنسا', 'trust.3': '+2 مليون<br>زجاجة مُباعة', 'trust.4': 'ثبات<br>يدوم', 'trust.4s': 'ماء عطر',
   'recs.title': 'قد يعجبك أيضاً', 'recs.more': 'عرض المزيد', 'recs.all': 'تم عرض كل العطور',
-  'card.alt': 'يشبه هذه العطور', 'card.lux': '(سعر العلامة الفاخرة: {p})', 'card.orig': 'عبدالصمد القرشي الأصلية',
-  'rated.brand': 'تقييمات', 'rated.txt': 'عبدالصمد القرشي حاصلة على تقييم <b>ممتاز</b>.', 'rated.small': '4.8 ⓘ (أكثر من 1000 تقييم)',
+  'card.alt': 'يشبه هذه العطور', 'card.lux': 'مستوحى من {p}', 'insp.by': 'مستوحى من:', 'insp.Men': 'لـه', 'insp.Women': 'لـها', 'insp.Unisex': 'للجنسين', 'card.orig': 'نيش الأصلية',
+  'rated.brand': 'تقييمات', 'rated.txt': 'نيش حاصلة على تقييم <b>ممتاز</b>.', 'rated.small': '4.8 ⓘ (أكثر من 1000 تقييم)',
   'rv.tab': 'التقييمات ({n})', 'qa.tab': 'الأسئلة', 'rv.based': 'بناءً على {n} تقييم', 'rv.rating': 'التقييم', 'rv.write': 'اكتب تقييماً', 'rv.sort': 'ترتيب',
   'sort.recent': 'الأحدث', 'sort.high': 'الأعلى تقييماً', 'sort.low': 'الأقل تقييماً', 'sort.helpful': 'الأكثر فائدة',
-  'rv.more': 'عرض المزيد', 'rv.verified': 'مشترٍ موثّق', 'rv.rec': 'أنصح بهذا المنتج', 'rv.helpful': 'هل كان هذا مفيداً؟', 'rv.brand': 'فريق عبدالصمد القرشي', 'rv.empty': 'لا توجد تقييمات بـ {n} نجوم بعد.', 'rv.justnow': 'الآن', 'rv.starsAl': 'التقييمات ذات {n} نجوم',
+  'rv.more': 'عرض المزيد', 'rv.verified': 'مشترٍ موثّق', 'rv.rec': 'أنصح بهذا المنتج', 'rv.helpful': 'هل كان هذا مفيداً؟', 'rv.brand': 'فريق نيش', 'rv.empty': 'لا توجد تقييمات بـ {n} نجوم بعد.', 'rv.justnow': 'الآن', 'rv.starsAl': 'التقييمات ذات {n} نجوم',
   'qa.intro': 'لديك سؤال؟ يجيب فريقنا عادةً خلال يوم.', 'qa.ask': 'اطرح سؤالاً', 'qa.q': 'س:', 'qa.wait': 'بانتظار الإجابة',
   'seo': 'عطر فانيليا|عطر ياسمين|عطر عود|عطر باتشولي|عطر ورد|عطر لافندر|عطر جوز الهند|عطر غاردينيا|عطر عنبر|عطر مسك',
   'f.news': 'كن أول من يعرف.', 'f.email': 'أدخل بريدك الإلكتروني', 'f.submit': 'اشترك', 'f.nlBad': 'يرجى إدخال بريد إلكتروني صحيح.', 'f.nlOk': 'شكراً لاشتراكك! تفقّد بريدك ✉️',
@@ -125,7 +156,7 @@ ar: {
   'loc.title': 'الدولة واللغة', 'loc.country': 'الدولة/المنطقة', 'loc.search': 'ابحث عن دولة', 'loc.lang': 'اللغة', 'loc.update': 'تحديث', 'loc.none': 'لم يتم العثور على دولة', 'toast.loc': 'تتسوّق الآن في {c} · {l}',
   'cookie.title': 'نحترم خصوصيتك', 'cookie.text': 'يستخدم هذا الموقع ملفات تعريف الارتباط لضمان أفضل تجربة لك. <a href="#" class="u-link">اعرف المزيد</a>', 'cookie.accept': 'قبول', 'cookie.decline': 'رفض', 'cookie.prefs': 'التفضيلات',
   'cookie.nec': 'ضرورية<small>مطلوبة لعمل الموقع</small>', 'cookie.ana': 'تحليلية<small>تساعدنا على تحسين المتجر</small>', 'cookie.mkt': 'تسويقية<small>عروض مخصّصة لك</small>', 'cookie.save': 'حفظ التفضيلات',
-  'lead.cap': 'ثلاثة عطور ذهبية بنكهة الفاكهة', 'lead.close': 'إغلاق', 'lead.hi': 'أهلاً بك لأول مرة!', 'lead.h': 'تريد خصماً حتى <span class="coral">20%</span>؟', 'lead.p': 'انضم إلى قائمتنا البريدية المميزة لتحصل على عروض حصرية.', 'lead.ph': 'أدخل بريدك الإلكتروني هنا',
+  'lead.capT': 'الأكثر مبيعاً للنساء', 'lead.cap': 'مس، سكاندل وكوكو نيش', 'lead.close': 'إغلاق', 'lead.hi': 'أهلاً بك لأول مرة!', 'lead.h': 'تريد خصماً حتى <span class="coral">20%</span>؟', 'lead.p': 'انضم إلى قائمتنا البريدية المميزة لتحصل على عروض حصرية.', 'lead.ph': 'أدخل بريدك الإلكتروني هنا',
   'lead.fine': 'بالضغط على «التالي» توافق على تلقي رسائل تسويقية عبر البريد، ويمكنك إلغاء الاشتراك في أي وقت. راجع سياسة الخصوصية وشروط الخدمة.', 'lead.next': 'التالي', 'lead.no': 'لا، شكراً.',
   'lead.in': 'أنت معنا!', 'lead.h2': 'إليك خصم <span class="coral">20%</span>', 'lead.p2': 'استخدم هذا الرمز عند الدفع في طلبك الأول.', 'lead.copy': 'نسخ', 'lead.start': 'ابدأ التسوّق', 'lead.pill': 'احصل على خصم 20%', 'toast.copied': 'تم نسخ الرمز!', 'toast.code': 'الرمز: {c}',
   'offer.title': 'اجمع ووفّر', 'offer.2': 'عطران', 'offer.3': '3 عطور', 'offer.4': '4 عطور أو أكثر', 'offer.off': 'خصم {d}%', 'offer.note': 'يُطبَّق الخصم تلقائياً في السلة. شحن مجاني للطلبات التي تضم قطعتين أو أكثر.',
@@ -228,30 +259,56 @@ const stamp = (x = 22, y = 22, s = 1) => `<g class="stamp" transform="translate(
 const bg = (c1, c2, id) => `<defs><radialGradient id="${id}" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></radialGradient></defs><rect width="400" height="400" fill="url(#${id})"/>`;
 const svg = (inner, vb = '0 0 400 400', cls = 'art') => `<svg class="${cls}" viewBox="${vb}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${inner}</svg>`;
 
-const MARK = '<svg viewBox="16 18 88 96" aria-hidden="true"><path d="M24 56 A36 36 0 0 1 96 56 V90 Q96 95 91 95 Q87 95 87 99 V104 Q87 110 81.5 110 Q76 110 76 104 V100 Q76 95 71 95 H49 Q44 95 44 99 V101 Q44 106 39.5 106 Q35 106 35 101 V99 Q35 95 30 95 Q24 95 24 90 Z" fill="#fff" stroke="#1d1d1d" stroke-width="1.6" stroke-linejoin="round"/><text x="60" y="63" text-anchor="middle" font-family="Lobster Two,cursive" font-style="italic" font-weight="700" font-size="25" fill="#3b2318">Viva</text><text x="60" y="78" text-anchor="middle" font-family="Cairo,sans-serif" font-weight="600" font-size="7.4" fill="#1d1d1d">عبدالصمد القرشي</text><text x="60" y="86.5" text-anchor="middle" font-family="Hanken Grotesk,Arial,sans-serif" font-weight="600" font-size="3.9" letter-spacing=".3" fill="#1d1d1d">ABDUL SAMAD AL QURASHI</text></svg>';
-/* Viva line — Abdul Samad Al Qurashi (images in assets/products, 1000×1000 from the brand store) */
+const MARK = '<svg viewBox="16 18 88 96" aria-hidden="true"><path d="M24 56 A36 36 0 0 1 96 56 V90 Q96 95 91 95 Q87 95 87 99 V104 Q87 110 81.5 110 Q76 110 76 104 V100 Q76 95 71 95 H49 Q44 95 44 99 V101 Q44 106 39.5 106 Q35 106 35 101 V99 Q35 95 30 95 Q24 95 24 90 Z" fill="#fff" stroke="#1d1d1d" stroke-width="1.6" stroke-linejoin="round"/><text x="60" y="63" text-anchor="middle" font-family="Lobster Two,cursive" font-style="italic" font-weight="700" font-size="25" fill="#3b2318">Viva</text><text x="60" y="78" text-anchor="middle" font-family="Harir,Cairo,sans-serif" font-weight="600" font-size="7.4" fill="#1d1d1d">نيش</text><text x="60" y="86.5" text-anchor="middle" font-family="Hanken Grotesk,Arial,sans-serif" font-weight="600" font-size="3.9" letter-spacing=".3" fill="#1d1d1d">NICHE</text></svg>';
+/* Viva line — Niche (images in assets/products, 1000×1000 from the brand store) */
+// Niche bestsellers — names, prices, ratings, review counts, subtitles and inspirations from nicheksa.store
 const PRODUCTS = {
-  'havana-banana': {en:'Viva Havana Banana', ar:'فيفا هافانا بانانا', price:119, luxury:599, rating:5,   count:1,  g:'Unisex', fam:'Gourmand'},
-  'milkshake':     {en:'Viva Milkshake',     ar:'فيفا ميلك شيك',     price:119, luxury:499, rating:5,   count:9,  g:'Unisex', fam:'Gourmand'},
-  'macaron':       {en:'Viva Macaron',       ar:'فيفا ماكارون',       price:119, luxury:459, rating:4.9, count:8,  g:'Unisex', fam:'Gourmand'},
-  'mango-oud':     {en:'Viva Mango Oud',     ar:'فيفا مانجو عود',     price:119, luxury:449, rating:5,   count:5,  g:'Unisex', fam:'Warm'},
-  'vanilla-latte': {en:'Viva Vanilla Latte', ar:'فيفا فانيلا لاتيه',  price:159, luxury:1049, rating:4.8, count:15, g:'Unisex', fam:'Gourmand'},
-  'hibiscus':      {en:'Viva Hibiscus',      ar:'فيفا هيبسكس',        price:119, luxury:0, rating:4.7, count:9,  g:'Unisex', fam:'Flowery'},
-  'matcha-cookie': {en:'Viva Matcha Cookie', ar:'فيفا ماتشا كوكي',    price:159, luxury:1990, rating:5,   count:2,  g:'Unisex', fam:'Fresh'},
-  'tiramisu':      {en:'Viva Tiramisu',      ar:'فيفا تيراميسو',      price:119, luxury:419, rating:0,   count:0,  g:'Unisex', fam:'Gourmand'},
-  'la-vida':       {en:'Viva La Vida',       ar:'فيفا لا فيدا',       price:159, luxury:1399, rating:4.5, count:13, g:'Men',   fam:'Fresh',   sub:['A lively men’s scent with citrus and spice', 'عطر رجالي حيوي بنفحات حمضية وتوابل']},
-  'la-oud':        {en:'Viva La Oud',        ar:'فيفا لا عود',        price:159, luxury:739, rating:4.8, count:25, g:'Unisex', fam:'Earthy', sub:['A deep oriental scent of oud and spice', 'عطر شرقي عميق بالعود والتوابل']},
-  'la-rose':       {en:'Viva La Rose',       ar:'فيفا لا روز',        price:119, luxury:659, rating:5,   count:5,  g:'Women', fam:'Flowery', sub:['An elegant women’s scent of red rose', 'عطر نسائي أنيق يتألق بالورد الأحمر']},
+  'althaer':      {en:'Althaer Niche',      ar:'الثائر نيش',       price:75, rating:4.9, count:92, g:'Men',    fam:'Gourmand', insp:['Parfums de Marly Althaïr', 'ألثاير من بارفامز دي مارلي'],         sub:['A warm, luxurious vanilla scent', 'عطر فاخر دافئ وفانيليا']},
+  'sauvage':      {en:'Sauvage Niche',      ar:'سوفاج نيش',        price:75, rating:4.9, count:77, g:'Men',    fam:'Fresh',    insp:['Dior Sauvage', 'سوفاج من ديور'],                                  sub:['A fresh, bold men’s scent', 'عطر رجالي منعش وجريء']},
+  'blue':         {en:'Blue Niche',         ar:'بلو نيش',          price:75, rating:4.8, count:56, g:'Men',    fam:'Fresh',    insp:['Bleu de Chanel', 'بلو دي شانيل'],                                 sub:['A fresh, elegant men’s scent', 'عطر رجالي منعش وأنيق']},
+  'miss':         {en:'Miss Niche',         ar:'مس نيش',           price:75, rating:4.8, count:32, g:'Women',  fam:'Flowery',  insp:['Miss Dior', 'مس ديور'],                                           sub:['A soft, elegant women’s scent', 'عطر نسائي ناعم أنيق']},
+  'strong':       {en:'Strong Niche',       ar:'سترونق نيش',       price:75, rating:5,   count:31, g:'Men',    fam:'Warm',     insp:['Giorgio Armani Stronger With You', 'سترونغر ويذ يو من جورجيو أرماني'], sub:['A warm men’s scent with modern appeal', 'عطر رجالي دافئ بجاذبية عصرية']},
+  'homme':        {en:'Homme Niche',        ar:'هوم نيش',          price:75, rating:4.9, count:26, g:'Men',    fam:'Earthy',   insp:['Dior Homme Intense', 'ديور هوم إنتنس'],                           sub:['A refined, luxurious men’s scent', 'عطر رجالي فاخر وأنيق']},
+  'leather':      {en:'Tuscan Leather Niche', ar:'توسكان لذر نيش', price:75, rating:4.9, count:23, g:'Unisex', fam:'Earthy',   insp:['Tom Ford Tuscan Leather', 'توسكان ليذر من توم فورد'],             sub:['A bold, luxurious leather scent', 'عطر جلدي فاخر وجريء']},
+  'allure-sport': {en:'Allure Sport Niche', ar:'الور نيش',         price:75, rating:4.7, count:20, g:'Men',    fam:'Fresh',    insp:['Chanel Allure Homme Sport', 'ألور هوم سبورت من شانيل'],           sub:['A fresh, elegant sporty scent', 'عطر رياضي منعش وأنيق']},
+  'scandal':      {en:'Scandal Niche',      ar:'سكاندل نيش',       price:75, rating:4.9, count:18, g:'Women',  fam:'Gourmand', insp:['Jean Paul Gaultier Scandal', 'سكاندال من جان بول غوتييه'],       sub:['A bold, honeyed women’s scent', 'عطر أنثوي جريء وعسلي']},
+  'libre':        {en:'Libre Niche',        ar:'ليبر نيش',         price:75, rating:4.9, count:17, g:'Women',  fam:'Flowery',  insp:['YSL Libre', 'ليبر من إيف سان لوران'],                             sub:['A bold, luxurious women’s scent', 'عطر أنثوي جريء وفاخر']},
+  'coco':         {en:'Coco Niche',         ar:'كوكو نيش',         price:75, rating:5,   count:14, g:'Women',  fam:'Flowery',  insp:['Chanel Coco Mademoiselle', 'كوكو مادموازيل من شانيل'],           sub:['A luxurious floral oriental scent', 'عطر زهري شرقي فاخر']},
+  'ultra':        {en:'Ultra Niche',        ar:'ألترا نيش',        price:75, rating:5,   count:13, g:'Men',    fam:'Warm',     insp:['Jean Paul Gaultier Le Male', 'لو ميل من جان بول غوتييه'],         sub:['A warm aromatic scent with a fresh twist', 'عطر عطري دافئ بانتعاش مميز']},
 };
 const pname = k => PRODUCTS[k][LANG] || PRODUCTS[k].en;
 const FAM_PILL = {Gourmand:'linear-gradient(to right bottom,#ffcd8d,#e95534)', Warm:'linear-gradient(to right bottom,#fff1a8,#f6c443)', Flowery:'linear-gradient(to right bottom,#fde7ee,#f4a9c0)', Fresh:'linear-gradient(to right bottom,#dff5e9,#8fd3b5)', Earthy:'linear-gradient(to right bottom,#efe3cc,#c7a97a)'};
-const GEN_CARDS = new Set(['milkshake', 'macaron', 'mango-oud', 'vanilla-latte', 'hibiscus', 'matcha-cookie', 'tiramisu', 'la-vida', 'la-oud', 'la-rose']);
 let CARD_SET = new URLSearchParams(location.search).get('cards') === 'clean' || store.get('cardSet', 'cards') === 'cards-clean' ? 'cards-clean' : 'cards';
-const IMG = (k, n) => n === 2 || !GEN_CARDS.has(k) ? `assets/products/viva-${k}${n === 2 ? '-2' : ''}.jpg` : `assets/${CARD_SET}/${k}.webp`;
+const IMG = (k, n) => `assets/products/niche-${k}${n === 2 ? '-2' : ''}.webp`;
 const offPct = p => p.compare ? Math.round((1 - p.price / p.compare) * 100) : 0;
 
 function productArt(key, mini) {
   return `<img class="art" src="${IMG(key)}" alt="${esc(pname(key))}" loading="lazy" decoding="async" width="${mini ? 200 : 1000}" height="${mini ? 200 : 1000}">`;
+}
+// "inspired by" strip over a product image: the original bottle, its name, and who it's for (+ optional quick add)
+function inspStrip(k, add) {
+  const p = PRODUCTS[k];
+  return `<div class="insp"><img class="insp__img" src="assets/products/inspired/${k}.webp" alt="" width="36" height="36" loading="lazy">
+    <span class="insp__txt"><span>${t('insp.by')} <b>${esc(L(p.insp))}</b></span><small>${t('insp.' + p.g)}</small></span>
+    ${add ? `<button class="insp__add" data-add="${k}" aria-label="${t('p.atc')}">+</button>` : ''}</div>`;
+}
+/* the product card used everywhere (drops, featured, shop grid, bundle builder).
+   o: {img, tag: [en, ar] eyebrow, cls, attrs, bundle: {inB, price}} */
+function pcard(k, o = {}) {
+  const p = PRODUCTS[k];
+  const rev = p.count ? `<span class="stars">${starsHTML(p.rating)}</span><span>${num(p.count)}</span>` : `<span class="card__new">${t('card.new')}</span>`;
+  const btn = o.bundle
+    ? `<button type="button" class="btn pcard__btn${o.bundle.inB ? ' is-in' : ''}" data-bundle="${k}">${t(o.bundle.inB ? 'bnd.added' : 'bnd.add')}</button>`
+    : `<button class="btn pcard__btn" data-add="${k}">${t('p.atc')}</button>`;
+  return `<article class="pcard${o.cls ? ' ' + o.cls : ''}"${o.attrs || ''}>
+    <img class="pcard__img" src="${o.img || IMG(k)}" alt="${esc(pname(k))}" loading="lazy">
+    ${inspStrip(k)}
+    <div class="pcard__body">
+      ${o.tag ? `<span class="pcard__eyebrow">${esc(L(o.tag))}</span>` : ''}
+      <div class="pcard__head"><h3 class="pcard__name">${esc(pname(k))}</h3><span class="pcard__price">${o.bundle ? o.bundle.price : fmt(p.price)}</span></div>
+      <div class="pcard__meta"><span class="pcard__rev">${rev}</span><span class="pcard__fam">${t('fam.' + p.fam)}</span></div>
+      ${btn}
+    </div></article>`;
 }
 function altArt(key) {
   return `<img class="art art--alt" src="${IMG(key, 2)}" alt="" loading="lazy" decoding="async" width="1000" height="1000">`;
@@ -297,13 +354,11 @@ const ART = {
     ${bottle({label: 'GOLDEN', sub: 'FIG', accent: '#7a4a2a', s: .5, x: 232, y: 440, cap: 'gold'})}`, '0 0 464 600'),
 };
 
-/* Pip — original mascot: a scent-drop with a leaf sprout; recolours per cursor flavour */
-const PIP_COL = {honey: ['#f2a93b', '#e08a1f'], berry: ['#9a6ad6', '#6b3fb0'], marsh: ['#f6b6c8', '#e0849f']};
+/* Mascot — the black perfume bottle */
 let flavor = store.get('flavor', 'honey');
-if (!PIP_COL[flavor]) flavor = 'honey';
-function pip(w = 78, f = flavor) {
-  const k = PIP_COL[f] ? f : 'honey';
-  return `<img class="pip-img" src="assets/pip/${k}.webp" alt="" width="${w}" height="${w}" draggable="false">`;
+if (!['honey', 'berry', 'marsh'].includes(flavor)) flavor = 'honey';
+function pip(w = 78) {
+  return `<svg class="pip-img" viewBox="88 72 336 368" width="${w}" height="${w}" fill="none" aria-hidden="true"><rect x="168" y="88" width="176" height="106" rx="14" fill="#222"/><rect x="149" y="213" width="214" height="211" rx="24" stroke="#222" stroke-width="22"/><rect x="149" y="246" width="214" height="146" fill="#222"/></svg>`;
 }
 
 const STAR = '<svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 1.5l2.6 5.6 6 .7-4.5 4.1 1.2 6L10 15l-5.3 2.9 1.2-6L1.4 7.8l6-.7z"/></svg>';
@@ -333,38 +388,61 @@ document.addEventListener('click', e => {
   const dead = e.target.closest('a[href="#"]'); if (dead && !dead.dataset.open) e.preventDefault();
   if (e.target.closest('[data-back]')) { e.preventDefault(); history.length > 1 ? history.back() : null; }
 });
-function lock(on) { document.documentElement.classList.toggle('no-scroll', on); }
+function lock(on) { document.documentElement.classList.toggle('no-scroll', on); window.__lenis?.[on ? 'stop' : 'start'](); }
 let lastFocus = null;
 
 /* =====================================================================
-   CURSOR: SVG pointer flavours + Pip companion that trails the mouse
+   CURSOR: calligraphic cursor/pointer (set in CSS) + bottle companion that trails the mouse
    ===================================================================== */
 const FLAVORS = {honey: {c: '#f2a93b', s: '#a8660f'}, berry: {c: '#9a6ad6', s: '#4a2585'}, marsh: {c: '#f6b6c8', s: '#b85a78'}};
-function cursorSVG(f, pointer) {
-  const {c, s} = FLAVORS[f];
-  const body = pointer
-    ? `<path d="M11 3c1.7 0 3 1.3 3 3v7l1-.5c1.6-.6 3.3.3 3.7 1.9l.1.4 1-.3c1.5-.4 3 .5 3.3 2l.1.5.7-.1c1.5-.1 2.8 1 2.9 2.5V26c0 3.3-2.7 6-6 6h-6.5c-2 0-3.8-1-4.9-2.6l-5-7.4c-.8-1.2-.5-2.8.7-3.6 1.1-.7 2.6-.5 3.4.6L8 21V6c0-1.7 1.3-3 3-3z" fill="${c}" stroke="${s}" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 7v9" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>`
-    : `<path d="M4 3l20 9.5-8.2 2.6L12.4 24z" fill="${c}" stroke="${s}" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 8l7 3.4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".65"/>`;
-  return `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='32' height='34' viewBox='0 0 32 34'>${body}</svg>`)}") ${pointer ? '11 3' : '4 3'}, ${pointer ? 'pointer' : 'auto'}`;
-}
 function renderPips() {
   $$('[data-mascot]').forEach(el => el.innerHTML = pip());
   $$('[data-peek]').forEach(el => el.innerHTML = pip(66, el.dataset.peek));
-  $('#buddyFig').innerHTML = pip(46);
+  $('#buddyFig').innerHTML = pip(34);
 }
 function renderFlavors() {
-  $('#flavors').innerHTML = Object.keys(FLAVORS).map(k => `<button data-f="${k}" class="${k === flavor ? 'is-on' : ''}"><i style="background:${FLAVORS[k].c}"></i>${t('flv.' + k)}</button>`).join('');
+  const fl = $('#flavors'); if (!fl) return;
+  fl.innerHTML = Object.keys(FLAVORS).map(k => `<button data-f="${k}" class="${k === flavor ? 'is-on' : ''}"><i style="background:${FLAVORS[k].c}"></i>${t('flv.' + k)}</button>`).join('');
 }
 function setFlavor(f) {
   flavor = f; store.set('flavor', f);
-  document.body.style.setProperty('--cur', cursorSVG(f, false));
-  document.body.style.setProperty('--cur-pt', cursorSVG(f, true));
   renderFlavors(); renderPips();
   if (typeof renderCart === 'function' && cart && !cartQty()) renderCart();
 }
-$('#flavors').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { setFlavor(b.dataset.f); toast(t('toast.cursor', {f: t('flv.' + b.dataset.f)})); } });
 
 const canHover = matchMedia('(hover:hover) and (pointer:fine)').matches;
+// perfume spray: soft mist puffs billow out radially from the click point, with a fast ring of fine droplets
+function spray(x, y) {
+  const box = document.createElement('div');
+  box.className = 'spray';
+  box.style.cssText = `left:${x}px;top:${y}px`;
+  const out = (a, d) => [Math.cos(a) * d, Math.sin(a) * d];
+  for (let i = 0; i < 16; i++) {
+    const a = i / 16 * Math.PI * 2 + (Math.random() - .5) * .5, size = 26 + Math.random() * 30;
+    const [dx, dy] = out(a, 26 + Math.random() * 34);
+    const p = document.createElement('i');
+    p.className = 'spray__puff';
+    p.style.cssText = `width:${size}px;height:${size}px`;
+    box.appendChild(p);
+    p.animate([
+      {transform: 'translate(-50%,-50%) scale(.2)', opacity: .9},
+      {transform: `translate(calc(-50% + ${dx * .6}px),calc(-50% + ${dy * .6}px)) scale(1.3)`, opacity: .55, offset: .35},
+      {transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy - 14}px)) scale(2.1)`, opacity: 0}
+    ], {duration: 900 + Math.random() * 500, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards'});
+  }
+  for (let i = 0; i < 26; i++) {
+    const [dx, dy] = out(Math.random() * Math.PI * 2, 40 + Math.random() * 46);
+    const d = document.createElement('i');
+    d.className = 'spray__drop';
+    box.appendChild(d);
+    d.animate([
+      {transform: 'translate(-50%,-50%) scale(1)', opacity: 1},
+      {transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.3)`, opacity: 0}
+    ], {duration: 450 + Math.random() * 300, easing: 'cubic-bezier(.1,.8,.3,1)', fill: 'forwards'});
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 1500);
+}
 (() => {
   const buddy = $('#buddy'), fig = $('#buddyFig');
   if (!canHover) return;
@@ -399,13 +477,7 @@ const canHover = matchMedia('(hover:hover) and (pointer:fine)').matches;
     buddy.classList.remove('is-hopping'); void buddy.offsetWidth; buddy.classList.add('is-hopping');
     setTimeout(() => buddy.classList.remove('is-hopping'), 560);
     if (reduce) return;
-    const cols = [FLAVORS[flavor].c, FLAVORS[flavor].s, '#ffd166', '#ffffff'];
-    for (let i = 0; i < 8; i++) {
-      const a = -Math.PI / 2 + (i - 3.5) * .42 + (Math.random() - .5) * .3, d = 34 + Math.random() * 30;
-      const s = document.createElement('span'); s.className = 'buddy__star';
-      s.style.cssText = `--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;--rot:${(Math.random() - .5) * 300}deg;--size:${.5 + Math.random() * .55}rem;--color:${cols[i % cols.length]}`;
-      buddy.appendChild(s); setTimeout(() => s.remove(), 800);
-    }
+    spray(e.clientX, e.clientY);
   });
 })();
 
@@ -504,7 +576,6 @@ document.addEventListener('click', e => { if (e.target.closest('[data-close-draw
 function openModal(id) {
   const m = $('#' + id); if (!m) return;
   closeDD(); if ($('.drawer.is-open')) closeDrawer();
-  $('#bubble').classList.remove('is-open');
   lastFocus = document.activeElement;
   m.classList.add('is-open'); lock(true);
   m.dispatchEvent(new CustomEvent('modal:open'));
@@ -528,7 +599,6 @@ document.addEventListener('keydown', e => {
   if ($('.modal.is-open')) { const m = $$('.modal.is-open').pop(); if (m.id !== 'cookieModal') closeModal(m); return; }
   if ($('#search.is-open')) return closeSearch();
   if ($('.drawer.is-open')) return closeDrawer();
-  if ($('#bubble.is-open')) return $('#bubble').classList.remove('is-open');
   closeDD(true);
 });
 /* focus trap */
@@ -608,7 +678,7 @@ lb.addEventListener('mousemove', e => { const it = e.target.closest('.lightbox__
 /* =====================================================================
    PRODUCT GRID
    ===================================================================== */
-const REC = ['milkshake', 'macaron', 'mango-oud', 'vanilla-latte', 'hibiscus', 'matcha-cookie', 'tiramisu', 'la-vida', 'la-oud', 'la-rose'];
+const REC = ['althaer', 'sauvage', 'blue', 'miss', 'strong', 'homme', 'leather', 'allure-sport', 'scandal', 'libre', 'coco', 'ultra'];
 let gridExpanded = false;
 const ART_CACHE = {};
 function syncSetSwitch() { $$('.setswitch button').forEach(b => b.classList.toggle('is-on', b.dataset.set === CARD_SET)); }
@@ -620,23 +690,8 @@ document.addEventListener('click', e => {
   $$('#grid .card').forEach(c => c.classList.add('is-in'));
 });
 function card(key, i) {
-  const p = PRODUCTS[key];
-  ART_CACHE[key] ??= productArt(key).replace('class="art"', 'class="art art--main"') + altArt(key);
-  const sub = p.luxury
-    ? `<p class="card__alt"><a href="#" data-toast-k="toast.compare">${t('card.alt')}</a></p><p class="card__lux">${t('card.lux', {p: fmt(p.luxury)})}</p>`
-    : `<p class="card__alt">${t('card.orig')}<br><b>${t('coll.1')}</b></p>`;
   const hidden = i >= 8 && !gridExpanded;
-  return `<article class="card${hidden ? ' is-hidden' : ''}" data-reveal style="--i:${i % 6}">
-    <a class="card__link" href="#recs" aria-label="${esc(pname(key))}"></a>
-    <div class="card__media"><span class="mark mark--card">${MARK}</span><span class="badge-g${p.g === 'Unisex' ? ' badge-g--u' : ''}">${t('g.' + p.g)}</span>${offPct(p) ? `<span class="badge-off">−${offPct(p)}%</span>` : ''}${ART_CACHE[key]}
-      <button class="card__quick" data-add="${key}">${t('p.atc')}</button></div>
-    <div class="card__body">
-      <div class="card__top"><h3 class="card__name">${esc(pname(key))}</h3><span class="fam-pill" style="background:${FAM_PILL[p.fam]}">${t('fam.' + p.fam)}</span></div>
-      <div class="card__rev">${p.count ? `<span class="stars">${starsHTML(p.rating)}</span>${num(p.count)}` : `<span class="card__new">${t('card.new')}</span>`}</div>
-      ${sub}<span class="card__spacer"></span>
-      <p class="card__price">${fmt(p.price)}${p.compare ? ` <s>${fmt(p.compare)}</s>` : ''}</p>
-      <button class="btn btn--primary card__atc" data-add="${key}">${t('p.atc')}</button>
-    </div></article>`;
+  return pcard(key, {cls: hidden ? 'is-hidden' : '', attrs: ` data-reveal style="--i:${i % 6}"`});
 }
 function renderGrid() {
   syncSetSwitch();
@@ -654,7 +709,7 @@ $p('#showMore').addEventListener('click', () => {
    CART
    ===================================================================== */
 let cart = store.get('cart', []).filter(l => PRODUCTS[l.k]);
-const UPSELL = ['vanilla-latte', 'la-oud', 'hibiscus'];
+const UPSELL = ['sauvage', 'miss', 'blue'];
 function cartQty() { return cart.reduce((a, l) => a + l.q, 0); }
 /* tiers: free shipping at 2 items, then -10% / -15% / -20% at 3 / 4 / 5 items */
 const SHIP_FEE = 25;
@@ -681,6 +736,7 @@ function renderCart() {
   const n = cartQty(), body = $('#cartBody'), foot = $('#cartFoot');
   $('#cartCount').textContent = n;
   $('#cartHeadCount').textContent = n ? itemsLabel(n) : '';
+  renderPromo();
   renderTiers(n);
   const rail = keys => `<p class="upsell-title">${t('cart.like')}</p><div class="urail">${keys.map(upsell).join('')}</div>`;
   if (!n) {
@@ -740,7 +796,7 @@ document.addEventListener('click', e => {
 function labelButtons() {
   $$('[data-addprice]').forEach(b => { if (!b.dataset.done) b.innerHTML = t('btn.addPrice', {p: fmt(PRODUCTS[b.dataset.addprice].price)}); });
   if (!$p('#atc').dataset.done) $p('#atc').innerHTML = t('p.atc');
-  const sb = $p('#stickyBtn'); if (!sb.dataset.done) sb.innerHTML = t('sticky.btn', {p: fmt(PRODUCTS['havana-banana'].price)});
+  const sb = $p('#stickyBtn'); if (!sb.dataset.done) sb.innerHTML = t('sticky.btn', {p: fmt(PRODUCTS.strong.price)});
 }
 
 /* sticky add-to-cart */
@@ -759,7 +815,7 @@ new IntersectionObserver(([en]) => { footerVisible = en.isIntersecting; updateSt
    SEARCH PANEL (popular pills, suggestions dropdown, product hits)
    ===================================================================== */
 const search = $('#search'), sInput = $('#searchInput'), sScrim = $('#searchScrim'), suggest = $('#suggest');
-const POPULAR = ['havana-banana', 'vanilla-latte', 'la-oud', 'milkshake', 'tiramisu', 'la-rose', 'matcha-cookie', 'mango-oud', 'hibiscus'];
+const POPULAR = ['althaer', 'sauvage', 'blue', 'miss', 'strong', 'homme', 'leather', 'scandal', 'libre'];
 let sIdx = -1;
 function renderPills() { $('#pills').innerHTML = POPULAR.map((k, i) => `<button type="button" style="--i:${i}">${esc(pname(k))}</button>`).join(''); }
 function openSearch() {
@@ -997,15 +1053,6 @@ $('#copyCode').addEventListener('click', () => {
 });
 
 /* =====================================================================
-   MASCOT (peek tab + flavour bubble)
-   ===================================================================== */
-const mascot = $('#mascot'), bubble = $('#bubble');
-if (store.get('pipHidden', false)) mascot.classList.add('is-hidden');
-$('#mascotBtn').addEventListener('click', e => { e.stopPropagation(); bubble.classList.toggle('is-open'); });
-$('#hideMascot').addEventListener('click', () => { bubble.classList.remove('is-open'); mascot.classList.add('is-hidden'); store.set('pipHidden', true); toast(t('toast.nap')); });
-document.addEventListener('click', e => { if (!e.composedPath().some(x => x.id === 'mascot')) bubble.classList.remove('is-open'); });
-
-/* =====================================================================
    REVEAL, SEO drag, tooltip tap
    ===================================================================== */
 const revealIO = new IntersectionObserver(en => en.forEach(x => { if (x.isIntersecting) { x.target.classList.add('is-in'); revealIO.unobserve(x.target); } }), {rootMargin: '0px 0px -8% 0px'});
@@ -1038,6 +1085,72 @@ function armReveal(root = document) {
       revealIO.observe(el);
     });
   }
+}
+
+/* =====================================================================
+   SMOOTH SCROLL (Lenis) — inertial wheel scrolling; drawers/modals keep native scroll,
+   in-page links glide to their section below the sticky top bar
+   ===================================================================== */
+(() => {
+  if (!window.Lenis || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const lenis = window.__lenis = new Lenis({lerp: .09, prevent: node => !!node.closest?.('.drawer, .modal, .search, .suggest, [data-lenis-prevent]')});
+  const raf = t => { lenis.raf(t); requestAnimationFrame(raf); };
+  requestAnimationFrame(raf);
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]'), id = a?.getAttribute('href');
+    if (!id || id.length < 2 || e.defaultPrevented) return;
+    const el = document.getElementById(id.slice(1)); if (!el || el.closest('.drawer, .modal')) return;
+    e.preventDefault();
+    lenis.scrollTo(el, {offset: -($('#topbar')?.offsetHeight || 0) - 8});
+  });
+})();
+
+/* =====================================================================
+   SCROLL ANIMATIONS — two-way: fade + rise in on entering, fade out on leaving
+   (drifting up past the top, down past the bottom); whatever enters together cascades
+   in on-screen order. [selector, motion]
+   ===================================================================== */
+const SA_RULES = [
+  ['.hero__content > *', 'up'],
+  ['.feats > .feat', 'up'],
+  ['.hsec__head', 'up'],
+  ['.track .pcard', 'up'],
+  ['.colls > .coll', 'up'],
+  ['.tops > .top', 'up'],
+  ['.story', 'fade'],
+  ['.bnd-head > *', 'up'],
+  ['#bndGrid .pcard', 'up'],
+];
+const saIO = new IntersectionObserver(entries => {
+  const rtl = document.documentElement.dir === 'rtl';
+  const pos = x => x.boundingClientRect.top * 4 + (rtl ? -x.boundingClientRect.right : x.boundingClientRect.left);
+  let k = 0;
+  entries.sort((a, b) => pos(a) - pos(b)).forEach(x => {
+    const el = x.target;
+    if (x.isIntersecting) {
+      el.style.setProperty('--sa-i', Math.min(k++, 8));
+      el.classList.add('is-vis');
+    } else {
+      el.dataset.saOut = x.boundingClientRect.bottom < innerHeight / 2 ? 'up' : 'down';
+      el.classList.remove('is-vis');
+    }
+  });
+}, {rootMargin: '-3% 0px -3% 0px'});
+function armScrollAnim() {
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  for (const [sel, type] of SA_RULES)
+    $$(sel).forEach(el => {
+      if (el.dataset.sa || el.dataset.rv || el.hasAttribute('data-reveal')) return;
+      el.dataset.sa = type; el.dataset.saOut = 'down';
+      saIO.observe(el);
+    });
+}
+armScrollAnim();
+// cards are (re)rendered by language switches, sliders and the bundle filter — pick new ones up
+{
+  let queued = 0;
+  new MutationObserver(() => { if (!queued) queued = requestAnimationFrame(() => { queued = 0; armScrollAnim(); }); })
+    .observe(document.body, {childList: true, subtree: true});
 }
 
 /* at the very bottom the reveal margin can never be crossed — reveal whatever is on screen */
@@ -1079,53 +1192,88 @@ document.addEventListener('click', () => $$('.chip--info.is-open').forEach(c => 
    ===================================================================== */
 const HOME_STR = {
   en: {
-    'home.title': 'Abdul Samad Al Qurashi | A perfume house since 1852', 'home.new': 'NEW', 'home.heroTitle': '<b>Viva Havana Banana:</b> a warm tropical treat of banana, cocoa and vanilla.',
+    'home.title': 'Niche | A perfume house', 'home.new': 'NEW', 'home.heroTitle': '<b>Strong Niche:</b> a warm men’s scent with modern appeal.',
     'home.shopNew': 'Shop new drops', 'home.shopAll': 'Shop all', 'home.pause': 'Pause video', 'home.unmute': 'Unmute video',
-    'home.f1': 'Crafted<br>with care', 'home.f1s': 'since 1852.', 'home.f2': 'Free<br>Returns', 'home.f2s': 'no questions asked.',
+    'home.f1': 'Crafted<br>with care', 'home.f1s': 'with love and care.', 'home.f2': 'Free<br>Returns', 'home.f2s': 'no questions asked.',
     'home.f3': '2,000,000+<br>Bottles', 'home.f3s': 'sold across the region.', 'home.f4': '100,000+<br>Reviews', 'home.f4s': 'from happy customers.',
-    'home.drops': 'Our latest drops', 'home.prev': 'Previous', 'home.next': 'Next', 'home.coll': 'The <b>Viva</b> Collection', 'home.collLa': 'The <b>La</b> Line',
-    'home.c1': 'The Viva Collection', 'home.c1s': 'Playful, dessert-inspired<br>perfumes for every day.', 'home.c2': 'The La Line', 'home.c2s': 'Bold extraits of oud,<br>rose and spice.',
+    'home.drops': 'Our latest drops', 'home.prev': 'Previous', 'home.next': 'Next', 'home.collMen': '<b>Men’s</b> perfumes', 'home.collWomen': '<b>Women’s</b> perfumes', 'home.collUnisex': '<b>Unisex</b> perfumes',
+    'home.c1': 'Niche Bundles', 'home.c1s': '4 hand-picked perfumes<br>from <b>SAR 129</b> <s>300</s>', 'home.c2': 'Build your bundle', 'home.c2s': 'Pick 3 perfumes,<br>get 3 <b>free</b>',
     'home.featured': 'Featured perfumes', 'home.viewAll': 'View all',
-    'home.s1': 'A perfume house<br>since 1852', 'home.s1p': 'Heritage craftsmanship, modern scents.<br>Made to be worn every day.',
-    'home.s2': 'Made to be<br>remembered', 'home.s2p': 'Every bottle is blended with care<br>and finished by hand.',
+    'home.s1': 'The original scent…<br>for less', 'home.s1p': 'We cracked the hardest equation: perfumes inspired by<br>world-famous scents, with the quality and longevity you deserve.', 'home.s1cta': 'Shop all perfumes',
+    'home.s2': 'Try Niche<br>in person', 'home.s2p': 'Visit us in Riyadh, Al-Ahsa or Al-Kharj<br>and find the scent closest to your taste.', 'home.s2list': '<li>Riyadh</li><li>Al-Ahsa</li><li>Al-Kharj</li><li>Salalah Gardens Mall <em>opening soon</em></li>', 'home.s2cta': 'Find a store',
+    'promo.tag': 'Limited offer', 'promo.title': 'Buy 3, get 3 FREE', 'promo.ends': 'Ends in', 'promo.cta': 'Shop now',
+    'promo.left': '<b>{n} more</b> to unlock the offer', 'promo.done': '<b>Unlocked!</b> 3 free perfumes are yours',
   },
   ar: {
-    'home.title': 'عبدالصمد القرشي | دار عطور منذ 1852', 'home.new': 'جديد', 'home.heroTitle': '<b>فيفا هافانا بانانا:</b> لمسة استوائية دافئة من الموز والكاكاو والفانيليا.',
+    'home.title': 'نيش | دار عطور', 'home.new': 'جديد', 'home.heroTitle': '<b>سترونق نيش:</b> عطر رجالي دافئ بجاذبية عصرية.',
     'home.shopNew': 'تسوّق الجديد', 'home.shopAll': 'تسوّق الكل', 'home.pause': 'إيقاف الفيديو', 'home.unmute': 'تشغيل الصوت',
-    'home.f1': 'صُنع<br>بإتقان', 'home.f1s': 'منذ عام 1852.', 'home.f2': 'إرجاع<br>مجاني', 'home.f2s': 'بلا أي أسئلة.',
+    'home.f1': 'صُنع<br>بإتقان', 'home.f1s': 'بحب وعناية.', 'home.f2': 'إرجاع<br>مجاني', 'home.f2s': 'بلا أي أسئلة.',
     'home.f3': '+2 مليون<br>زجاجة', 'home.f3s': 'بيعت في المنطقة.', 'home.f4': '+100 ألف<br>تقييم', 'home.f4s': 'من عملاء سعداء.',
-    'home.drops': 'أحدث الإصدارات', 'home.prev': 'السابق', 'home.next': 'التالي', 'home.coll': 'مجموعة <b>فيفا</b>', 'home.collLa': 'سلسلة <b>لا</b>',
-    'home.c1': 'مجموعة فيفا', 'home.c1s': 'عطور مرحة مستوحاة<br>من الحلويات لكل يوم.', 'home.c2': 'سلسلة لا', 'home.c2s': 'خلاصات جريئة من العود<br>والورد والتوابل.',
+    'home.drops': 'أحدث الإصدارات', 'home.prev': 'السابق', 'home.next': 'التالي', 'home.collMen': 'عطور <b>رجالية</b>', 'home.collWomen': 'عطور <b>نسائية</b>', 'home.collUnisex': 'عطور <b>للجنسين</b>',
+    'home.c1': 'باقات نيش', 'home.c1s': '4 عطور مختارة<br>من <b>129 ر.س</b> <s>300</s>', 'home.c2': 'كوّن باقتك', 'home.c2s': 'اختر 3 عطور<br>واحصل على 3 <b>مجاناً</b>',
     'home.featured': 'عطور مختارة', 'home.viewAll': 'عرض الكل',
-    'home.s1': 'دار عطور<br>منذ 1852', 'home.s1p': 'حِرفية عريقة بعطور عصرية،<br>صُنعت لتُرتدى كل يوم.',
-    'home.s2': 'صُنع<br>ليُتذكّر', 'home.s2p': 'كل زجاجة تُمزج بعناية<br>وتُختم باليد.',
+    'home.s1': 'ريحة الأصل…<br>بس أوفر', 'home.s1p': 'حققنا المعادلة الأصعب: عطور مستوحاة من روائح عالمية،<br>بجودة وثبات يليق بذوقك.', 'home.s1cta': 'تسوّق كل العطور',
+    'home.s2': 'جرّب نيش<br>على الطبيعة', 'home.s2p': 'زورنا في الرياض أو الأحساء أو الخرج،<br>واكتشف العطر الأقرب لذوقك.', 'home.s2list': '<li>الرياض</li><li>الأحساء</li><li>الخرج</li><li>صلالة جاردنز مول <em>قريبًا</em></li>', 'home.s2cta': 'مواقع الفروع',
+    'promo.tag': 'عرض محدود', 'promo.title': 'اشترِ 3 واحصل على 3 مجاناً', 'promo.ends': 'ينتهي خلال', 'promo.cta': 'تسوّق الآن',
+    'promo.left': 'متبقي <b>{n}</b> للحصول على العرض', 'promo.done': '<b>مبروك!</b> حصلت على 3 عطور مجاناً',
   },
 };
 Object.assign(I18N.en, HOME_STR.en);
 Object.assign(I18N.ar, HOME_STR.ar);
 
 // tall "latest drops" cards: placeholder imagery until the designer's portrait shots land in assets/home/
+// [product, image, eyebrow [en, ar]] — image defaults to the product shot
 const DROPS = [
-  ['havana-banana', 'assets/gallery/g6-apply.webp', true], ['vanilla-latte', 'assets/cards/vanilla-latte.webp'],
-  ['la-rose', 'assets/gallery/lead-model.webp', true], ['la-oud', 'assets/cards/la-oud.webp'],
-  ['milkshake', 'assets/cards/milkshake.webp'], ['tiramisu', 'assets/cards/tiramisu.webp'],
-  ['hibiscus', 'assets/cards/hibiscus.webp'], ['mango-oud', 'assets/cards/mango-oud.webp'],
+  ['strong', 'assets/home/drop-strong-niche.webp', ['Huda Al Hajj', 'هدى الحاج']], ['althaer', IMG('althaer')],
+  ['scandal', IMG('scandal')], ['sauvage', IMG('sauvage')],
+  ['miss', IMG('miss')], ['blue', IMG('blue')],
+  ['libre', IMG('libre')], ['leather', IMG('leather')],
 ];
-const FEATURED = ['la-oud', 'vanilla-latte', 'milkshake', 'hibiscus', 'mango-oud', 'la-rose', 'matcha-cookie', 'tiramisu'];
-const collOf = k => k.startsWith('la-') ? t('home.collLa') : t('home.coll');
+const FEATURED = ['sauvage', 'miss', 'blue', 'scandal', 'homme', 'coco', 'leather', 'libre'];
+const collOf = k => t('home.coll' + PRODUCTS[k].g);
+
+/* promo strip: "buy 3 get 3 free" — cart progress, countdown to midnight, collapses while scrolling down */
+const MINI_BOTTLE = '<svg viewBox="140 80 232 352" fill="none"><rect x="168" y="88" width="176" height="106" rx="14" fill="currentColor"/><rect x="149" y="213" width="214" height="211" rx="24" stroke="currentColor" stroke-width="22"/><rect x="149" y="246" width="214" height="146" fill="currentColor"/></svg>';
+function renderPromo() {
+  const slots = $('#promoSlots'); if (!slots) return;
+  const n = Math.min(cartQty(), 3);
+  slots.innerHTML = Array.from({length: 6}, (_, i) => `<i class="${i < 3 ? (i < n ? 'is-on' : '') : 'is-gift' + (n >= 3 ? ' is-on' : '')}">${MINI_BOTTLE}</i>`).join('');
+  $('#promoLeft').innerHTML = t(n >= 3 ? 'promo.done' : 'promo.left', {n: 3 - n});
+  $('#promo').classList.toggle('is-done', n >= 3);
+}
+(() => {
+  const promo = $('#promo'), clock = $('#promoClock'); if (!promo) return;
+  const pad = v => String(Math.floor(v)).padStart(2, '0');
+  const tick = () => {
+    const now = new Date(), end = new Date(now); end.setHours(24, 0, 0, 0);
+    const s = Math.floor((end - now) / 1000);
+    clock.innerHTML = [s / 3600, s / 60 % 60, s % 60].map(v => `<b>${pad(v)}</b>`).join('<i>:</i>');
+  };
+  tick(); setInterval(tick, 1000);
+  // full top bar height (header + expanded strip), so the hero fits the first screen; measured from the inner bar, so collapsing on scroll does not resize the hero
+  const bar = $('.promo__bar', promo), header = $('#header');
+  // written in the next frame and only on change, so the observers never loop
+  let topH = '', fitQ = 0;
+  const fit = () => {
+    const v = bar.offsetHeight + header.offsetHeight + 'px';
+    if (v !== topH) document.documentElement.style.setProperty('--top-h', topH = v);
+  };
+  const ro = new ResizeObserver(() => { if (!fitQ) fitQ = requestAnimationFrame(() => { fitQ = 0; fit(); }); });
+  ro.observe(bar); ro.observe(header);
+  fit();
+  let lastY = scrollY;
+  addEventListener('scroll', () => {
+    const y = scrollY;
+    if (Math.abs(y - lastY) < 6) return;
+    promo.classList.toggle('is-hidden', y > lastY && y > 120);
+    lastY = y;
+  }, {passive: true});
+})();
 
 function renderHome() {
   if (!onPage('#dropsTrack')) return;
-  $('#dropsTrack').innerHTML = DROPS.map(([k, img, model]) => `<article class="drop">
-      <img src="${img}" alt="${esc(pname(k))}" loading="lazy">
-      ${model ? `<span class="drop__tag">${esc(L(['Abdul Samad Al Qurashi', 'عبدالصمد القرشي']))}</span>` : ''}
-      <div class="drop__body"><h3 class="drop__name">${esc(pname(k))}</h3><p class="drop__coll">${collOf(k)}</p>
-        <button class="btn" data-add="${k}">${t('p.atc')} &nbsp;${fmt(PRODUCTS[k].price)}</button></div></article>`).join('');
-  $('#featTrack').innerHTML = FEATURED.map(k => { const p = PRODUCTS[k]; return `<article class="fcard">
-      <a class="fcard__media" href="index.html"><img src="${IMG(k)}" alt="${esc(pname(k))}" loading="lazy"></a>
-      <div class="fcard__body"><h3 class="fcard__name">${esc(pname(k))}</h3>
-        <div class="fcard__rev">${p.count ? `<span class="stars">${starsHTML(p.rating)}</span>${num(p.count)}` : `<span class="card__new">${t('card.new')}</span>`}</div>
-        <button class="btn btn--outline" data-add="${k}">${t('p.atc')} &nbsp;${fmt(p.price)}</button></div></article>`; }).join('');
+  $('#dropsTrack').innerHTML = DROPS.map(([k, img, tag]) => pcard(k, {img, tag})).join('');
+  $('#featTrack').innerHTML = FEATURED.map(k => pcard(k)).join('');
   $$('[data-mark]').forEach(el => el.innerHTML = MARK);
   $$('.track').forEach(makeSlider);
   buildTrackNav(); heroControls();
@@ -1279,7 +1427,7 @@ new MutationObserver(syncArrows).observe(document.documentElement, {attributes: 
 
 /* hero video: shown only when a source is set (assets/home/hero.mp4); pause + mute toggles */
 (() => {
-  const v = $('[data-hero-video]'); if (!v) return;
+  const v = $('video[data-hero-video]'); if (!v) return;
   const src = document.body.dataset.heroVideo; if (!src) return;
   v.src = src; v.hidden = false; $('.hero__img').hidden = true;
   v.play().catch(() => {});
@@ -1289,21 +1437,21 @@ new MutationObserver(syncArrows).observe(document.documentElement, {attributes: 
    BUNDLE BUILDER (only runs on the bundle page; shares the cart state)
    ===================================================================== */
 Object.assign(I18N.en, {
-  'bnd.pageTitle': 'Make a bundle | Abdul Samad Al Qurashi', 'bnd.title': 'Bundle.', 'bnd.lead': 'Pick 3 or more perfumes and the savings grow with every one you add.',
+  'bnd.pageTitle': 'Make a bundle | Niche', 'bnd.title': 'Bundle.', 'bnd.lead': 'Pick 3 or more perfumes and the savings grow with every one you add.',
   'bnd.summary': 'Price summary', 'bnd.initial': 'Initial price', 'bnd.subtotal': 'Subtotal', 'bnd.checkout': 'Checkout',
   'bnd.hintNext': 'Add {n} more {u} for {d}% off', 'bnd.hintFree': 'Add {n} more {u} for free shipping', 'bnd.hintMax': 'You’ve unlocked the maximum 20% off',
   'bnd.off': '{d}% OFF', 'bnd.freeShip': 'Free shipping', 'bnd.all': 'All perfumes', 'bnd.best': 'Bestsellers', 'bnd.add': 'Add to bundle', 'bnd.added': 'In bundle ✓',
   'bnd.none': 'No perfumes match your search.', 'bnd.remove': 'Remove {p}', 'bnd.empty': 'Add at least one perfume to check out',
 });
 Object.assign(I18N.ar, {
-  'bnd.pageTitle': 'كوّن باقتك | عبدالصمد القرشي', 'bnd.title': 'باقتك.', 'bnd.lead': 'اختر 3 عطور أو أكثر، وكلما أضفت أكثر زاد التوفير.',
+  'bnd.pageTitle': 'كوّن باقتك | نيش', 'bnd.title': 'باقتك.', 'bnd.lead': 'اختر 3 عطور أو أكثر، وكلما أضفت أكثر زاد التوفير.',
   'bnd.summary': 'ملخص السعر', 'bnd.initial': 'السعر الأولي', 'bnd.subtotal': 'المجموع الفرعي', 'bnd.checkout': 'إتمام الشراء',
   'bnd.hintNext': 'أضف {n} {u} لتحصل على خصم {d}%', 'bnd.hintFree': 'أضف {n} {u} لتحصل على شحن مجاني', 'bnd.hintMax': 'حصلت على أقصى خصم 20%',
   'bnd.off': 'خصم {d}%', 'bnd.freeShip': 'شحن مجاني', 'bnd.all': 'كل العطور', 'bnd.best': 'الأكثر مبيعاً', 'bnd.add': 'أضف إلى الباقة', 'bnd.added': 'في الباقة ✓',
   'bnd.none': 'لا توجد عطور تطابق بحثك.', 'bnd.remove': 'إزالة {p}', 'bnd.empty': 'أضف عطراً واحداً على الأقل لإتمام الشراء',
 });
 
-const BND_ORDER = ['havana-banana', 'la-oud', 'vanilla-latte', 'la-rose', 'milkshake', 'hibiscus', 'mango-oud', 'la-vida', 'matcha-cookie', 'macaron', 'tiramisu'];
+const BND_ORDER = ['althaer', 'sauvage', 'blue', 'miss', 'strong', 'homme', 'leather', 'allure-sport', 'scandal', 'libre', 'coco', 'ultra'];
 let bndFilter = 'all';
 const CHECK = '<svg viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="6"/><path d="M3.2 6.2l1.8 1.7 3.8-3.8" stroke="#fff" stroke-width="1.3" fill="none"/></svg>';
 
@@ -1356,30 +1504,16 @@ function renderBundle() {
   const priceHTML = p => { const v = Math.round(p.price * (1 - nextRate) * 100) / 100; return (nextRate ? `<s>${fmt(p.price)}</s>` : '') + fmt(v) + (nextRate ? `<em>−${nextRate * 100}%</em>` : ''); };
   // same filter/search/language as last render: patch prices + buttons in place (no re-animation)
   const key = [bndFilter, q, LANG].join('|');
-  if (key === renderBundle.key && $$('#bndGrid .bcard').length === keys.length) {
-    $$('#bndGrid .bcard').forEach(card => {
+  if (key === renderBundle.key && $$('#bndGrid .pcard').length === keys.length) {
+    $$('#bndGrid .pcard').forEach(card => {
       const btn = card.querySelector('[data-bundle]'), k = btn.dataset.bundle, inB = items.includes(k);
-      card.querySelector('.bcard__price').innerHTML = priceHTML(PRODUCTS[k]);
+      card.querySelector('.pcard__price').innerHTML = priceHTML(PRODUCTS[k]);
       btn.classList.toggle('is-in', inB); btn.textContent = t(inB ? 'bnd.added' : 'bnd.add');
     });
     return;
   }
   renderBundle.key = key;
-  $('#bndGrid').innerHTML = keys.map((k, i) => {
-    const p = PRODUCTS[k], inB = items.includes(k), price = Math.round(p.price * (1 - nextRate) * 100) / 100;
-    const sub = p.luxury
-      ? `<p class="card__alt"><a href="#" data-toast-k="toast.compare">${t('card.alt')}</a></p><p class="card__lux">${t('card.lux', {p: fmt(p.luxury)})}</p>`
-      : `<p class="card__alt">${t('card.orig')}<br><b>${t('coll.1')}</b></p>`;
-    return `<article class="bcard" style="animation-delay:${Math.min(i, 8) * 40}ms">
-      <div class="bcard__media"><span class="badge-g${p.g === 'Unisex' ? ' badge-g--u' : ''}">${t('g.' + p.g)}</span><img src="${IMG(k)}" alt="${esc(pname(k))}" loading="lazy"></div>
-      <div class="bcard__body">
-        <div class="card__top"><h3 class="card__name">${esc(pname(k))}</h3><span class="fam-pill" style="background:${FAM_PILL[p.fam]}">${t('fam.' + p.fam)}</span></div>
-        <div class="card__rev">${p.count ? `<span class="stars">${starsHTML(p.rating)}</span>${num(p.count)}` : `<span class="card__new">${t('card.new')}</span>`}</div>
-        ${sub}
-        <p class="bcard__price">${priceHTML(p)}</p>
-        <button type="button" class="btn btn--primary${inB ? ' is-in' : ''}" data-bundle="${k}">${t(inB ? 'bnd.added' : 'bnd.add')}</button>
-      </div></article>`;
-  }).join('');
+  $('#bndGrid').innerHTML = keys.map(k => pcard(k, {bundle: {inB: items.includes(k), price: priceHTML(PRODUCTS[k])}})).join('');
   $('#bndEmpty').hidden = keys.length > 0;
 }
 
@@ -1419,8 +1553,8 @@ document.addEventListener('click', e => {
 document.addEventListener('input', e => { if (e.target.id === 'bndSearch') renderBundle(); });
 
 /* ---- homepage round 2: labelled arrows, eased carousel slide, dots, hero controls ---- */
-Object.assign(I18N.en, {'home.shopViva': 'Shop Viva', 'home.shopLa': 'Shop the La line', 'home.shopWomen': 'Shop women', 'home.shopMen': 'Shop men', 'home.shopUnisex': 'Shop unisex', 'home.shop': 'Shop', 'home.play': 'Play video', 'home.mute': 'Mute video'});
-Object.assign(I18N.ar, {'home.shopViva': 'تسوّق فيفا', 'home.shopLa': 'تسوّق سلسلة لا', 'home.shopWomen': 'تسوّق للنساء', 'home.shopMen': 'تسوّق للرجال', 'home.shopUnisex': 'تسوّق للجنسين', 'home.shop': 'تسوّق', 'home.play': 'تشغيل الفيديو', 'home.mute': 'كتم الصوت'});
+Object.assign(I18N.en, {'home.shopViva': 'Shop bundles', 'home.shopLa': 'Start your bundle', 'home.shopWomen': 'Shop women', 'home.shopMen': 'Shop men', 'home.shopUnisex': 'Shop unisex', 'home.shop': 'Shop', 'home.play': 'Play video', 'home.mute': 'Mute video'});
+Object.assign(I18N.ar, {'home.shopViva': 'تسوّق الباقات', 'home.shopLa': 'ابدأ باقتك', 'home.shopWomen': 'تسوّق للنساء', 'home.shopMen': 'تسوّق للرجال', 'home.shopUnisex': 'تسوّق للجنسين', 'home.shop': 'تسوّق', 'home.play': 'تشغيل الفيديو', 'home.mute': 'كتم الصوت'});
 
 /* dots + arrows under each carousel (shown on mobile) */
 function buildTrackNav() {
@@ -1439,7 +1573,7 @@ function syncDots() { syncArrows(); }
 /* hero: play/pause + mute toggles always present; they drive the video once one is set */
 function heroControls() {
   const play = $('[data-hero-play]'), mute = $('[data-hero-mute]'); if (!play) return;
-  const v = $('[data-hero-video]');
+  const v = $('video[data-hero-video]');
   const PAUSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M10 8.5v7M14 8.5v7"/></svg>';
   const PLAY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M10 8.5l6 3.5-6 3.5z"/></svg>';
   const MUTED = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
@@ -1472,7 +1606,7 @@ function applyStatic() {
   $$('[data-price]').forEach(el => { const p = PRODUCTS[el.dataset.price]; el.innerHTML = fmt(p.price) + (p.compare ? ` <s>${fmt(p.compare)}</s>` : ''); });
   $$('[data-trust]').forEach(el => el.src = `assets/gallery/trust-${LANG}.webp`);
   $$('[data-mark]').forEach(el => el.innerHTML = MARK);
-  $p('#inspired').innerHTML = t('p.inspired', {p: fmt(PRODUCTS['havana-banana'].luxury)});
+  $p('#inspired').innerHTML = t('p.inspired', {p: esc(L(PRODUCTS.strong.insp))});
   $('#rights').textContent = t('legal.rights', {y: new Date().getFullYear()});
   $('#locLabel').textContent = LANG === 'ar' ? 'ع' : 'EN';
   $p('#seo').setAttribute('aria-label', t('disc.fams'));

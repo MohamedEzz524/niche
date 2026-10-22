@@ -1,0 +1,360 @@
+{
+ "source": "https://sa.abdulsamadalqurashi.com/ar/",
+ "collected": "2026-10-21",
+ "brandColorNavy": "#251C4E",
+ "notes": "No videos on homepage. Category pages (women/men/unisex) have no banners in this theme. No model/people lifestyle photography exists on the store; lifestyle items are styled packshots. Prices are current sale prices (store-wide 50% off at collection time).",
+ "files": [
+  {
+   "file": "hero-1-desktop.webp",
+   "kind": "hero",
+   "width": 1108,
+   "height": 428,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/a01ca3e9-4603-4427-99a2-946286d607bd-original.webp",
+   "notes": "Hero slide 1 (desktop, 1108x428 ~2.6:1). Sunset-sky campaign: Viva Hibiscus, Golden Musk, Allure Body Oud, Dehn oud bottles and an incense-oud jar on dark stone blocks with agarwood chips. Arabic text \"50% OFF على جميع المنتجات\", free delivery over 250 SAR. Links to c867835694 (العطور)."
+  },
+  {
+   "file": "hero-1-mobile.webp",
+   "kind": "hero",
+   "width": 1290,
+   "height": 860,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/5760e898-c165-4b37-b4c0-db9c1df94429-original.webp",
+   "notes": "Hero slide 1 (mobile, 3:2). Same sunset/agarwood campaign as hero-1-desktop with Arabic 50% OFF text."
+  },
+  {
+   "file": "hero-2-desktop.webp",
+   "kind": "hero",
+   "width": 1108,
+   "height": 428,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/18acad39-25d8-4df8-adf0-6d279c63837f-original.webp",
+   "notes": "Hero slide 2 (desktop). Warm gold studio set on marble plinth: Satin Body Oud, Dehn Oud incense jar, oud oil bottle, Qurashi Blend; English text \"50% OFF ON ALL PRODUCTS / Free Shipping For Orders More Than 250 SAR\" on left."
+  },
+  {
+   "file": "hero-2-mobile.webp",
+   "kind": "hero",
+   "width": 1290,
+   "height": 860,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/0925fc4e-1bf1-4997-937b-e7eab9c19572-original.webp",
+   "notes": "Hero slide 2 (mobile, 3:2). Same gold/marble English campaign as hero-2-desktop."
+  },
+  {
+   "file": "hero-3-desktop.webp",
+   "kind": "hero",
+   "width": 1108,
+   "height": 428,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/49af9968-0b43-4ce1-877f-91d128ec10eb.webp",
+   "notes": "Second homepage slider (desktop): \"Viva BOX\" promo — Viva La Oud + Viva La Rose 50ml bottles and swirled pink/blue Viva gift box on a rock, dark navy background, price SAR 599 -> 199. Links to p682963485."
+  },
+  {
+   "file": "hero-3-mobile.webp",
+   "kind": "hero",
+   "width": 1290,
+   "height": 860,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/174f5aec-03e5-4452-9554-4f4eff6fb11b.webp",
+   "notes": "Second homepage slider (mobile, 3:2): Viva BOX promo, same as hero-3-desktop."
+  },
+  {
+   "file": "banner-musk-oud-musk.webp",
+   "kind": "category",
+   "width": 728,
+   "height": 273,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/22d51a43-5003-46ab-8165-9879f9213b56.webp",
+   "notes": "Full-width \"fixed banner\" on homepage linking to المسك (c344332970): Oud Musk (مسك العود) Arabic Collection — copper-capped oil + spray bottles and ivory geometric-pattern gift boxes on dark brown/gold background. No text overlay."
+  },
+  {
+   "file": "cat-incense-oud.webp",
+   "kind": "category",
+   "width": 600,
+   "height": 300,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/7dbd745a-945d-49c9-9aa1-fea486491b5a.webp",
+   "notes": "Homepage rectangle banner linking to عود البخور (c661586610): open navy presentation box of agarwood chips on wet stone, night mountains and stars, blue tones. No text."
+  },
+  {
+   "file": "cat-bakhoor.webp",
+   "kind": "category",
+   "width": 600,
+   "height": 300,
+   "sourceUrl": "https://cdn.files.salla.network/homepage/1068090911/acde62a4-68d5-4d31-bb2f-ff9561e3edbb.webp",
+   "notes": "Homepage rectangle banner linking to بخور معطر (c1899241907): three gold-capped glass jars of perfumed oud (Dehn Oud black, blue, orange labels) against night-blue mountain sky. No text."
+  },
+  {
+   "file": "cat-women.jpg",
+   "kind": "category",
+   "width": 600,
+   "height": 600,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/HmZ2ZkdMKSI6M8WYFwTAPzTc98dtxHN7AyFKf38u.jpg",
+   "notes": "Category image for العطور النسائية (c560418988), shown as a circle on homepage: Safari La Femme square faceted bottle with gold cap and red base, white background."
+  },
+  {
+   "file": "cat-men.jpg",
+   "kind": "category",
+   "width": 600,
+   "height": 600,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/d0f0rxCCgidZdDpmSavuqqzXh7yn5hokPmh4uPPD.jpg",
+   "notes": "Category image for العطور الرجالية (c1469723043), homepage circle: cobalt-blue Safari Blue bottle, white background."
+  },
+  {
+   "file": "cat-unisex.jpg",
+   "kind": "category",
+   "width": 600,
+   "height": 600,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/sBK5f63n59QlDmSc0G8LWSMmYGtnLkHHtiXqFvVu.jpg",
+   "notes": "Category image for عطور للجنسين (c1934393261), homepage circle: Qurashi Blend amber bottle with octagonal gold cap, white background."
+  },
+  {
+   "file": "cat-home-fragrance.jpg",
+   "kind": "category",
+   "width": 600,
+   "height": 600,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/SSXcSt2onxFDj023xlsA3RvTLnPbFioEt80LvnEF.jpg",
+   "notes": "Category image for عطور المنزل (c1759304872), homepage circle: tall green cylindrical room-mist can, white background."
+  },
+  {
+   "file": "prod-viva-milkshake.jpg",
+   "kind": "product",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/7f8ca829-0b4f-40c8-8cbc-31cae2e49e54-1000x1000-wsbS452hScPSbRmjErvgnPkUOLfx9wbcv8xqStR7.jpg",
+   "notes": "Viva Milkshake — cream bottle with black cap and pink \"dripping\" label (playful youth line). Name: عطر فيفا ميلك شيك 100 مل. Price: 125 SAR (was 250 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/عطر-فيفا-ميلك-شيك-100-مل/p1351197184",
+   "product": {
+    "name": "عطر فيفا ميلك شيك 100 مل",
+    "price": 125,
+    "regularPrice": 250,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/عطر-فيفا-ميلك-شيك-100-مل/p1351197184",
+    "id": 1351197184
+   }
+  },
+  {
+   "file": "prod-viva-mango-oud.jpg",
+   "kind": "product",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/a2e914c5-74cd-4cd2-9aca-ced0c3a11cd9-1000x1000-h1biofwJjaONbtg8iGE86zrqKzmSASu02fCKXMKv.jpg",
+   "notes": "Viva Mango Oud — cream bottle with black cap and orange dripping label. Name: عطر فيفا مانجو عود 100 مل. Price: 125 SAR (was 250 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/عطر-فيفا-مانجو-عود-100-مل/p1516968895",
+   "product": {
+    "name": "عطر فيفا مانجو عود 100 مل",
+    "price": 125,
+    "regularPrice": 250,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/عطر-فيفا-مانجو-عود-100-مل/p1516968895",
+    "id": 1516968895
+   }
+  },
+  {
+   "file": "prod-viva-tiramisu.jpg",
+   "kind": "product",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/ac840ce1-df16-4131-ae4a-f3e4a9a3fc2f-1000x1000-dNyYwRBimQpX1aiaElZ2uqhVHpET2BVTr5IFURBI.jpg",
+   "notes": "Viva Tiramisu — cream bottle with black cap and brown dripping label. Name: عطر فيفا تيراميسو 100 مل. Price: 125 SAR (was 250 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/عطر-فيفا-تيراميسو-100-مل/p2031985761",
+   "product": {
+    "name": "عطر فيفا تيراميسو 100 مل",
+    "price": 125,
+    "regularPrice": 250,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/عطر-فيفا-تيراميسو-100-مل/p2031985761",
+    "id": 2031985761
+   }
+  },
+  {
+   "file": "prod-viva-box.jpg",
+   "kind": "product",
+   "width": 923,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/0188cb50-ad77-438c-91d3-450477fc26e9-923.27044025157x1000-oomP3k0ybFJQAkkSEXeCJnOcmuC6FY84UOEWI8uZ.jpg",
+   "notes": "Viva Box gift set — two Viva bottles (pink & blue swirl) inside a burgundy-edged box; image is 923x1000 (not square). Name: صندوق فيفا. Price: 215 SAR (was 430 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/صندوق-فيفا/p1486139651",
+   "product": {
+    "name": "صندوق فيفا",
+    "price": 215,
+    "regularPrice": 430,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/صندوق-فيفا/p1486139651",
+    "id": 1486139651
+   }
+  },
+  {
+   "file": "prod-musk-noble.jpg",
+   "kind": "product",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/42703f88-0737-40e6-964a-b598535d2444-1000x1000-NyhzXr5Uev7lPFcpWSJs44ZzhJTIhspWoInJaObd.jpg",
+   "notes": "Abdul Samad Musk Noble 80ml — tall clear cylinder with purple cap/label, styled with violets, vanilla pods, lime, amber. Name: مسك عبد الصمد - نوبل 80 مل. Price: 120 SAR (was 240 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/مسك-عبد-الصمد-نوبل-80-مل/p1781405546",
+   "product": {
+    "name": "مسك عبد الصمد - نوبل 80 مل",
+    "price": 120,
+    "regularPrice": 240,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/مسك-عبد-الصمد-نوبل-80-مل/p1781405546",
+    "id": 1781405546
+   }
+  },
+  {
+   "file": "prod-musk-ruby.jpg",
+   "kind": "product",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/d68044c0-7d7f-4aeb-ab2e-2a5183775893-1000x1000-KqxUIaW0fefEkmNOHcBb77DOkVKUW4yVKeUKd3Sb.jpg",
+   "notes": "Abdul Samad Musk Ruby 80ml — clear cylinder with purple cap, styled with red flowers, peach, berries. Name: مسك عبد الصمد - روبي 80 مل. Price: 120 SAR (was 240 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/مسك-عبد-الصمد-روبي-80-مل/p51906824",
+   "product": {
+    "name": "مسك عبد الصمد - روبي 80 مل",
+    "price": 120,
+    "regularPrice": 240,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/مسك-عبد-الصمد-روبي-80-مل/p51906824",
+    "id": 51906824
+   }
+  },
+  {
+   "file": "prod-musk-golden.jpg",
+   "kind": "product",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/40443898-0399-4381-acfc-09f7c1563609-1000x1000-IkuVDTped6pdGk4zpc7BEklkAwR9nZuWYxdBhzdW.jpg",
+   "notes": "Abdul Samad Golden Musk 80ml — clear cylinder with purple cap, styled with lavender, orange, amber, vanilla. Name: مسك عبد الصمد - جولدن مسك 80 مل. Price: 120 SAR (was 240 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/مسك-عبد-الصمد-جولدن-مسك-80-مل/p152483036",
+   "product": {
+    "name": "مسك عبد الصمد - جولدن مسك 80 مل",
+    "price": 120,
+    "regularPrice": 240,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/مسك-عبد-الصمد-جولدن-مسك-80-مل/p152483036",
+    "id": 152483036
+   }
+  },
+  {
+   "file": "prod-safari-lahoum.webp",
+   "kind": "product",
+   "width": 600,
+   "height": 600,
+   "sourceUrl": "https://cdn.files.salla.network/products/1068090911/288976ec-c648-4bc8-8825-0886393d8f59-original.webp",
+   "notes": "Safari L'Homme 75ml — rectangular amber-glass bottle with navy cap (men). Name: عطر سفاري لاهوم 75 مل. Price: 445 SAR (was 890 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/عطر-سفاري-لاهوم-75-مل/p1154195730",
+   "product": {
+    "name": "عطر سفاري لاهوم 75 مل",
+    "price": 445,
+    "regularPrice": 890,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/عطر-سفاري-لاهوم-75-مل/p1154195730",
+    "id": 1154195730
+   }
+  },
+  {
+   "file": "prod-rannat-khalkhal.webp",
+   "kind": "product",
+   "width": 900,
+   "height": 900,
+   "sourceUrl": "https://cdn.files.salla.network/products/1068090911/17b46ce8-0bab-4271-8a70-b237593d609c-original.webp",
+   "notes": "Rannat Khalkhal 75ml (National Day edition) — emerald-green teardrop bottle with gold ornament and tall gold cap. Name: عطر رنة خلخال 75 مل - إصدار خاص باليوم الوطني السعودي. Price: 220 SAR (was 440 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/عطر-رنة-خلخال-75-مل-إصدار-خاص-باليوم-الوطني-السعودي/p944520114",
+   "product": {
+    "name": "عطر رنة خلخال 75 مل - إصدار خاص باليوم الوطني السعودي",
+    "price": 220,
+    "regularPrice": 440,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/عطر-رنة-خلخال-75-مل-إصدار-خاص-باليوم-الوطني-السعودي/p944520114",
+    "id": 944520114
+   }
+  },
+  {
+   "file": "prod-safari-blue.webp",
+   "kind": "product",
+   "width": 900,
+   "height": 900,
+   "sourceUrl": "https://cdn.files.salla.network/products/1068090911/0cfb8fd0-499e-47ad-b648-b121313df522-original.webp",
+   "notes": "Safari Blue bottle — cobalt-blue rectangular bottle (image from the Safari Blue set product page). Name: مجموعة سفاري بلو. Price: 395 SAR (was 790 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/مجموعة-سفاري-بلو/p695154199",
+   "product": {
+    "name": "مجموعة سفاري بلو",
+    "price": 395,
+    "regularPrice": 790,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/مجموعة-سفاري-بلو/p695154199",
+    "id": 695154199
+   }
+  },
+  {
+   "file": "prod-qurashi-blend.jpg",
+   "kind": "product",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/77f343a7-b61d-474a-8d4a-88ff856ece0c-1000x1000-qVNIeruvQaV75N3X15Ygkd7wLuAKotPTmx8M8tSi.jpg",
+   "notes": "Qurashi Blend — amber faceted bottle with octagonal gold cap (image from the Qurashi Blend gift set page). Name: مجموعة الإهداء القرشي بلند. Price: 495 SAR (was 990 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/مجموعة-الإهداء-القرشي-بلند/p1641827426",
+   "product": {
+    "name": "مجموعة الإهداء القرشي بلند",
+    "price": 495,
+    "regularPrice": 990,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/مجموعة-الإهداء-القرشي-بلند/p1641827426",
+    "id": 1641827426
+   }
+  },
+  {
+   "file": "prod-safari-extreme.webp",
+   "kind": "product",
+   "width": 900,
+   "height": 900,
+   "sourceUrl": "https://cdn.files.salla.network/products/1068090911/62e759a4-c2aa-45a6-a59e-9f289e151dcf-original.webp",
+   "notes": "Safari Extreme — rectangular amber bottle with dark-brown cap (image from Safari Extreme set page). Name: مجموعة سفاري إكستريم. Price: 495 SAR (was 990 SAR). URL: https://sa.abdulsamadalqurashi.com/ar/مجموعة-سفاري-إكستريم/p2072418586",
+   "product": {
+    "name": "مجموعة سفاري إكستريم",
+    "price": 495,
+    "regularPrice": 990,
+    "currency": "SAR",
+    "url": "https://sa.abdulsamadalqurashi.com/ar/مجموعة-سفاري-إكستريم/p2072418586",
+    "id": 2072418586
+   }
+  },
+  {
+   "file": "lifestyle-qurashi-blend-giftbox.jpg",
+   "kind": "lifestyle",
+   "width": 1000,
+   "height": 1000,
+   "sourceUrl": "https://cdn.salla.sa/xRnQG/4a53f25d-3ae3-4f14-937f-b74eb7b3d4af-1000x1000-V20DKaIz2zpVOUIW443p6xidexIDJacQPucgYVjn.jpg",
+   "notes": "Styled packshot (no people): Qurashi Blend bottle and perfumed agarwood jar inside an open brown/gold gift box, close-up angle. From product page of مجموعة الإهداء القرشي بلند (https://sa.abdulsamadalqurashi.com/ar/مجموعة-الإهداء-القرشي-بلند/p1641827426)."
+  },
+  {
+   "file": "lifestyle-rannat-khalkhal-box.webp",
+   "kind": "lifestyle",
+   "width": 900,
+   "height": 900,
+   "sourceUrl": "https://cdn.files.salla.network/products/1068090911/c3af2845-4b99-484f-9fac-4655935946c4-original.webp",
+   "notes": "Styled packshot (no people): Rannat Khalkhal green bottle beside its green-and-gold ornamental box. From product page of عطر رنة خلخال 75 مل - إصدار خاص باليوم الوطني السعودي (https://sa.abdulsamadalqurashi.com/ar/عطر-رنة-خلخال-75-مل-إصدار-خاص-باليوم-الوطني-السعودي/p944520114)."
+  },
+  {
+   "file": "lifestyle-safari-blue-set.webp",
+   "kind": "lifestyle",
+   "width": 900,
+   "height": 900,
+   "sourceUrl": "https://cdn.files.salla.network/products/1068090911/55d0c050-2f44-4075-9648-361840497375-original.webp",
+   "notes": "Styled packshot (no people): Safari Blue set — navy botanical gift box with shower gel tube and blue bottle. From product page of مجموعة سفاري بلو (https://sa.abdulsamadalqurashi.com/ar/مجموعة-سفاري-بلو/p695154199)."
+  },
+  {
+   "file": "lifestyle-safari-lahoum-box.webp",
+   "kind": "lifestyle",
+   "width": 900,
+   "height": 900,
+   "sourceUrl": "https://cdn.files.salla.network/products/1068090911/64db450d-623e-43e7-805e-9693f8b0ea12-original.webp",
+   "notes": "Styled packshot (no people): Safari L'Homme bottle with its dark-teal box. From product page of عطر سفاري لاهوم 75 مل (https://sa.abdulsamadalqurashi.com/ar/عطر-سفاري-لاهوم-75-مل/p1154195730)."
+  },
+  {
+   "file": "logo-header.webp",
+   "kind": "logo",
+   "width": 260,
+   "height": 45,
+   "sourceUrl": "https://cdn.files.salla.network/theme/1068090911/7ba2a2f2-55d6-4729-bfd4-9379be9d87a5.webp",
+   "notes": "Horizontal header logo: \"Abdul Samad al Qurashi\" Latin wordmark + circular ASQ monogram + Arabic عبد الصمد القرشي, navy #251C4E on white, no transparency. Max size served is 260x45. The footer uses this exact same file (no separate footer/white logo). Also the og:image."
+  },
+  {
+   "file": "favicon.webp",
+   "kind": "logo",
+   "width": 32,
+   "height": 32,
+   "sourceUrl": "https://cdn.files.salla.network/theme/1068090911/5395d263-ef58-4ea8-8593-e31e35240309.webp",
+   "notes": "Favicon / apple-touch-icon: circular ASQ monogram, navy on white, 32x32 only."
+  },
+  {
+   "file": "logo-monogram-1024.png",
+   "kind": "logo",
+   "width": 1024,
+   "height": 1024,
+   "sourceUrl": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/d1/c9/e4/d1c9e49a-3673-a3d3-1272-1b10cb121adc/new_app_icon-0-0-1x_U007emarketing-0-8-0-85-220.png/1024x1024bb.png",
+   "notes": "High-res circular ASQ monogram (navy #251C4E on white, no alpha) from the brand own iOS app icon (App Store id6452720713, linked from the store footer). Best source for a sharp monogram."
+  }
+ ]
+}
